@@ -1,0 +1,57 @@
+
+<header class="header">
+	<div class="header__title title">
+		<span class="title__bigsexy">BigSexy</span>
+		<span class="title__rhymes">Rhymes</span>
+	</div>
+
+	<div class="header__description">
+		Find words that rhyme well with each other.
+	</div>
+</header>
+
+<div class="body">
+
+	<form (submit)="handleSubmit()" class="search">
+		<input type="text" name="query" [(ngModel)]="query" class="search__input" />
+		<button type="submit" class="search__submit">
+			Search
+		</button>
+	</form>
+
+	<!-- BEGIN: Loading Indicator. -->
+	<div *ngIf="isLoading" class="loading">
+		Loading...
+	</div>
+	<!-- END: Loading Indicator. -->
+
+	<!-- BEGIN: No Results. -->
+	<div *ngIf="( results && ! results.count )" class="no-results">
+		Sorry, no rhymes found.
+	</div>
+	<!-- END: No Results. -->
+
+	<!-- BEGIN: Results. -->
+	<div *ngIf="( results && results.count )" class="results">
+		
+		<div *ngFor="let group of results.groups" class="results__group">
+			<div class="results__label">
+				{{ group.syllableCount }}
+				<ng-template [ngIf]="( group.syllableCount === 1 )">Syllable:</ng-template>
+				<ng-template [ngIf]="( group.syllableCount > 1 )">Syllables:</ng-template>
+			</div>
+
+			<div class="results__value">
+				<span
+					*ngFor="let rhyme of group.rhymes; last as isLast;"
+					class="results__token"
+					[class.results__token--emphasize]="rhyme.isStrongMatch">
+					{{ rhyme.word }}<ng-template [ngIf]="! isLast">,</ng-template>
+				</span>
+			</div>
+		</div>
+
+	</div>
+	<!-- END: Results. -->
+
+</div>

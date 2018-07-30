@@ -1,0 +1,46 @@
+
+:host {
+	display: block ;
+}
+
+.canvas {
+	border: 3px solid #CCCCCC ;
+	display: flex ;
+	min-height: 300px ;
+
+	&__input,
+	&__syllables {
+		border: 0px ;
+		font-size: 20px ;
+
+		line-height: 30px ;
+		padding: 20px 22px 20px 22px ;
+	}
+
+	&__input {
+		background-color: #FAFAFA ;
+		flex: 1 1 100% ;
+		font-family: inherit ;
+		font-weight: 300 ;
+	}
+
+	&__syllables {
+		background-color: #EAEAEA ;
+		color: #999999 ;
+		flex: 0 1 70px ;
+		font-weight: 400 ;
+		list-style-type: none ;
+		margin: 0px 0px 0px 0px ;
+		overflow: hidden ;
+		text-align: center ;
+	}
+
+	&__syllable {
+		margin: 0px 0px 0px 0px ;
+		padding: 0px 0px 0px 0px ;
+
+		&--none {
+			visibility: hidden ;
+		}
+	}
+}

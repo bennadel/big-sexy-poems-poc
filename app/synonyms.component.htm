@@ -1,0 +1,82 @@
+
+<header class="header">
+	<div class="header__title title">
+		<span class="title__bigsexy">BigSexy</span>
+		<span class="title__synonyms">Synonyms</span>
+	</div>
+
+	<div class="header__description">
+		Find words that mean roughly the same thing.
+	</div>
+</header>
+
+<div class="body">
+
+	<form (submit)="handleSubmit()" class="search">
+		<input type="text" name="query" [(ngModel)]="query" class="search__input" />
+		<button type="submit" class="search__submit">
+			Search
+		</button>
+	</form>
+
+	<!-- BEGIN: Loading Indicator. -->
+	<div *ngIf="isLoading" class="loading">
+		Loading...
+	</div>
+	<!-- END: Loading Indicator. -->
+
+	<!-- BEGIN: No Results. -->
+	<div *ngIf="( results && ! results.count )" class="no-results">
+		Sorry, no rhymes found.
+	</div>
+	<!-- END: No Results. -->
+
+	<div class="results">
+		<div class="results__group">
+			<div class="results__label">
+				Synonyms:
+			</div>
+
+			<div class="results__value">
+				<span
+					*ngFor="let word of synonyms; last as isLast;"
+					class="results__token"
+					[class.results__token--emphasize]="word.isStrongMatch">
+					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
+				</span>
+			</div>
+		</div>
+
+		<div class="results__group">
+			<div class="results__label">
+				Generalization:
+			</div>
+
+			<div class="results__value">
+				<span
+					*ngFor="let word of generalizations; last as isLast;"
+					class="results__token"
+					[class.results__token--emphasize]="word.isStrongMatch">
+					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
+				</span>
+			</div>
+		</div>
+
+		<div class="results__group">
+			<div class="results__label">
+				Similar Meaning:
+			</div>
+
+			<div class="results__value">
+				<span
+					*ngFor="let word of meansLikes; last as isLast;"
+					class="results__token"
+					[class.results__token--emphasize]="word.isStrongMatch">
+					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
+				</span>
+			</div>
+		</div>
+		
+	</div>
+
+</div>

@@ -1,0 +1,14 @@
+
+<div class="canvas">
+	<textarea [(ngModel)]="poem" class="canvas__input"></textarea>
+	<ul class="canvas__syllables">
+		<li
+			*ngFor="let count of syllableCounts"
+			class="canvas__syllable"
+			[class.canvas__syllable--none]="( count === 0 )">
+			{{ count }}
+		</li>
+	</ul>
+</div>
+
+<a (click)="doit()">Calculate syllables</a>
