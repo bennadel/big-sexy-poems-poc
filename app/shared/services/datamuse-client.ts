@@ -98,7 +98,8 @@ export class DatamuseClient {
 			.get<Match[]>(
 				`https://api.datamuse.com/${ resource }`,
 				{
-					params: this.makeRequestParams( config )
+					params: this.makeRequestParams( config ),
+					withCredentials: true
 				}
 			)
 			.toPromise()

@@ -1,21 +1,21 @@
 webpackJsonp([1],{
 
-/***/ 210:
+/***/ 212:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
-var platform_browser_dynamic_1 = __webpack_require__(91);
+var platform_browser_dynamic_1 = __webpack_require__(93);
 // Import the root module for bootstrapping.
-var app_module_1 = __webpack_require__(211);
+var app_module_1 = __webpack_require__(213);
 platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule);
 
 
 /***/ }),
 
-/***/ 211:
+/***/ 213:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28,18 +28,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
-var platform_browser_1 = __webpack_require__(55);
-var http_1 = __webpack_require__(234);
-var core_1 = __webpack_require__(10);
+var platform_browser_1 = __webpack_require__(57);
+var http_1 = __webpack_require__(94);
+var core_1 = __webpack_require__(6);
 // Import the application components and services.
-var app_component_1 = __webpack_require__(213);
-var canvas_component_1 = __webpack_require__(216);
+var app_component_1 = __webpack_require__(214);
+var canvas_component_1 = __webpack_require__(217);
 // import { CoreModule } from "./shared/core.module";
-var header_component_1 = __webpack_require__(219);
-var rhymes_component_1 = __webpack_require__(222);
-var shared_module_1 = __webpack_require__(232);
-var sync_component_1 = __webpack_require__(225);
-var synonyms_component_1 = __webpack_require__(228);
+var header_component_1 = __webpack_require__(222);
+var rhymes_component_1 = __webpack_require__(225);
+var shared_module_1 = __webpack_require__(228);
+var sync_component_1 = __webpack_require__(230);
+var synonyms_component_1 = __webpack_require__(233);
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 var AppModule = /** @class */ (function () {
@@ -74,7 +74,600 @@ exports.AppModule = AppModule;
 
 /***/ }),
 
-/***/ 212:
+/***/ 214:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+// Import the application components and services.
+// import { DatamuseClient } from "./shared/services/datamuse-client";
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+var AppComponent = /** @class */ (function () {
+    // I initialize the app-component.
+    function AppComponent() {
+        this.copyright = (new Date()).getFullYear();
+    }
+    AppComponent = __decorate([
+        core_1.Component({
+            selector: "my-app",
+            styles: [__webpack_require__(215)],
+            template: __webpack_require__(216)
+        }),
+        __metadata("design:paramtypes", [])
+    ], AppComponent);
+    return AppComponent;
+}());
+exports.AppComponent = AppComponent;
+
+
+/***/ }),
+
+/***/ 215:
+/***/ (function(module, exports) {
+
+module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 20px ;\n}\n.canvas {\n  margin: 30px 0px 30px 0px ;\n}\n.palettes {\n  display: flex ;\n}\n.palettes__rhymes {\n  flex: 1 1 50% ;\n}\n.palettes__sync {\n  flex: 0 1 auto ;\n  padding: 75px 20px 20px 20px ;\n}\n.palettes__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
+
+/***/ }),
+
+/***/ 216:
+/***/ (function(module, exports) {
+
+module.exports = "\n<bs-header class=\"header\"></bs-header>\n<bs-canvas class=\"canvas\"></bs-canvas>\n\n<div class=\"palettes\">\n\t<div class=\"palettes__rhymes\">\n\t\t<bs-rhymes></bs-rhymes>\n\t</div>\n\t<div class=\"palettes__sync\">\n\t\t<bs-sync></bs-sync>\n\t</div>\n\t<div class=\"palettes__synonyms\">\n\t\t<bs-synonyms></bs-synonyms>\n\t</div>\n</div>\n\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by <a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
+
+/***/ }),
+
+/***/ 217:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+var word_service_1 = __webpack_require__(58);
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+var CanvasComponent = /** @class */ (function () {
+    // I initialize the canvas-component.
+    function CanvasComponent(wordService) {
+        this.wordService = wordService;
+        this.poem = "hello world\n\nwhat it be like";
+        this.syllableCounts = [3, 0, 4];
+    }
+    CanvasComponent.prototype.doit = function () {
+        var _this = this;
+        var sanitizedPoem = this.poem
+            .toLowerCase()
+            .replace(/[^\w\s-]/gi, "");
+        var tokens = sanitizedPoem.match(/\S+/g);
+        var uniqueWords = tokens.reduce(function (reduction, token) {
+            reduction[token] = 0;
+            return (reduction);
+        }, Object.create(null));
+        this.wordService
+            .getSyllableCounts(Object.keys(uniqueWords))
+            .then(function (counts) {
+            console.log(counts);
+            _this.syllableCounts = sanitizedPoem
+                .split(/\r\n?|\n/g)
+                .map(function (line) {
+                var tokens = line.match(/\S+/g);
+                if (!tokens) {
+                    return (0);
+                }
+                var count = tokens.reduce(function (reduction, token) {
+                    return (reduction + (counts[token] || 0));
+                }, 0);
+                return (count);
+            });
+        })
+            .catch(function (error) {
+            console.error(error);
+        });
+    };
+    CanvasComponent = __decorate([
+        core_1.Component({
+            selector: "bs-canvas",
+            styles: [__webpack_require__(220)],
+            template: __webpack_require__(221)
+        }),
+        __metadata("design:paramtypes", [word_service_1.WordService])
+    ], CanvasComponent);
+    return CanvasComponent;
+}());
+exports.CanvasComponent = CanvasComponent;
+
+
+/***/ }),
+
+/***/ 218:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var http_1 = __webpack_require__(94);
+var core_1 = __webpack_require__(6);
+var DatamuseClient = /** @class */ (function () {
+    // I initialize the datamuse client.
+    function DatamuseClient(httpClient) {
+        this.httpClient = httpClient;
+    }
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    // I get Datamuse suggestions based on the given configuration.
+    DatamuseClient.prototype.getSuggestions = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.makeRequest("sug", config)];
+                    case 1: return [2 /*return*/, (_a.sent())];
+                }
+            });
+        });
+    };
+    // I get Datamuse words based on the given configuration.
+    DatamuseClient.prototype.getWords = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.makeRequest("words", config)];
+                    case 1: return [2 /*return*/, (_a.sent())];
+                }
+            });
+        });
+    };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    // I make the HTTP request to the Datamuse API.
+    DatamuseClient.prototype.makeRequest = function (resource, config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.httpClient
+                            .get("https://api.datamuse.com/" + resource, {
+                            params: this.makeRequestParams(config),
+                            withCredentials: true
+                        })
+                            .toPromise()];
+                    case 1:
+                        result = _a.sent();
+                        return [2 /*return*/, (result)];
+                }
+            });
+        });
+    };
+    // I take the various configuration objects and normalize them into a set of request
+    // parameters that can be used with the HttpClient.
+    DatamuseClient.prototype.makeRequestParams = function (config) {
+        var params = {
+            max: "10"
+        };
+        for (var _i = 0, _a = Object.keys(config); _i < _a.length; _i++) {
+            var key = _a[_i];
+            params[key] = config[key].toString();
+        }
+        return (params);
+    };
+    DatamuseClient = __decorate([
+        core_1.Injectable({
+            providedIn: "root"
+        }),
+        __metadata("design:paramtypes", [http_1.HttpClient])
+    ], DatamuseClient);
+    return DatamuseClient;
+}());
+exports.DatamuseClient = DatamuseClient;
+
+
+/***/ }),
+
+/***/ 219:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+var StorageService = /** @class */ (function () {
+    function StorageService() {
+    }
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    StorageService.prototype.getItem = function (key) {
+        try {
+            var serializedValue = window.localStorage.getItem(this.getStorageKey(key));
+            var value = JSON.parse(serializedValue);
+            return (value);
+        }
+        catch (error) {
+            console.warn("Storage could not be read.");
+            console.error(error);
+            return (undefined);
+        }
+    };
+    StorageService.prototype.setItem = function (key, value) {
+        var _this = this;
+        window.requestAnimationFrame(function () {
+            try {
+                window.localStorage.setItem(_this.getStorageKey(key), JSON.stringify(value));
+            }
+            catch (error) {
+                console.warn("Storage could not be written.");
+                console.error(error);
+            }
+        });
+    };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    StorageService.prototype.getStorageKey = function (key) {
+        return ("big-sexy-poems:" + key.toLowerCase());
+    };
+    StorageService = __decorate([
+        core_1.Injectable({
+            providedIn: "root"
+        }),
+        __metadata("design:paramtypes", [])
+    ], StorageService);
+    return StorageService;
+}());
+exports.StorageService = StorageService;
+
+
+/***/ }),
+
+/***/ 220:
+/***/ (function(module, exports) {
+
+module.exports = ":host {\n  display: block ;\n}\n.canvas {\n  border: 3px solid #CCCCCC;\n  display: flex ;\n  min-height: 300px ;\n}\n.canvas__input,\n.canvas__syllables {\n  border: 0px ;\n  font-size: 20px ;\n  line-height: 30px ;\n  padding: 20px 22px 20px 22px ;\n}\n.canvas__input {\n  background-color: #FAFAFA;\n  flex: 1 1 100% ;\n  font-family: inherit ;\n  font-weight: 300 ;\n}\n.canvas__syllables {\n  background-color: #EAEAEA;\n  color: #999999;\n  flex: 0 1 70px ;\n  font-weight: 400 ;\n  list-style-type: none ;\n  margin: 0px 0px 0px 0px ;\n  overflow: hidden ;\n  text-align: center ;\n}\n.canvas__syllable {\n  margin: 0px 0px 0px 0px ;\n  padding: 0px 0px 0px 0px ;\n}\n.canvas__syllable--none {\n  visibility: hidden ;\n}\n"
+
+/***/ }),
+
+/***/ 221:
+/***/ (function(module, exports) {
+
+module.exports = "\n<div class=\"canvas\">\n\t<textarea [(ngModel)]=\"poem\" class=\"canvas__input\"></textarea>\n\t<ul class=\"canvas__syllables\">\n\t\t<li\n\t\t\t*ngFor=\"let count of syllableCounts\"\n\t\t\tclass=\"canvas__syllable\"\n\t\t\t[class.canvas__syllable--none]=\"( count === 0 )\">\n\t\t\t{{ count }}\n\t\t</li>\n\t</ul>\n</div>\n\n<a (click)=\"doit()\">Calculate syllables</a>\n"
+
+/***/ }),
+
+/***/ 222:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+var HeaderComponent = /** @class */ (function () {
+    // I initialize the header-component.
+    function HeaderComponent() {
+        this.inspiration = "beauty";
+        this.lastRotatedAt = Date.now();
+        this.sources = [
+            "anger",
+            "beauty",
+            "bliss",
+            "devotion",
+            "desire",
+            "excitement",
+            "fate",
+            "fury",
+            "grace",
+            "honor",
+            "instinct",
+            "joy",
+            "life",
+            "love",
+            "lust",
+            "passion",
+            "sex",
+            "wonder"
+        ];
+    }
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    // I handle the mousemove event on the header, rotating the source of inspiration
+    // in response to the user interaction.
+    HeaderComponent.prototype.handleMousemove = function () {
+        var now = Date.now();
+        var delta = (now - this.lastRotatedAt);
+        if (delta > 250) {
+            this.rotateInspiration();
+            this.lastRotatedAt = now;
+        }
+    };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    // I rotate the inspiration, selecting the next source at random.
+    HeaderComponent.prototype.rotateInspiration = function () {
+        var nextInspiration = this.inspiration;
+        while (nextInspiration === this.inspiration) {
+            nextInspiration = this.sources[Math.floor(Math.random() * this.sources.length)];
+        }
+        this.inspiration = nextInspiration;
+    };
+    HeaderComponent = __decorate([
+        core_1.Component({
+            selector: "bs-header",
+            styles: [__webpack_require__(223)],
+            template: __webpack_require__(224)
+        }),
+        __metadata("design:paramtypes", [])
+    ], HeaderComponent);
+    return HeaderComponent;
+}());
+exports.HeaderComponent = HeaderComponent;
+
+
+/***/ }),
+
+/***/ 223:
+/***/ (function(module, exports) {
+
+module.exports = ":host {\n  display: block ;\n}\n.header {\n  display: flex ;\n  font-family: \"Roboto\";\n  font-size: 36px ;\n  height: 50px ;\n  line-height: 50px ;\n}\n.header__name {\n  color: #121212;\n  display: flex ;\n  flex: 0 1 auto ;\n  padding-right: 30px ;\n}\n.header__message {\n  border-left: 2px solid #C8C8C8;\n  color: #666666;\n  flex: 1 1 auto ;\n  font-weight: 100 ;\n  padding-left: 30px ;\n}\n.header__bigsexy {\n  font-weight: 900 ;\n}\n.header__poems {\n  font-weight: 300 ;\n}\n"
+
+/***/ }),
+
+/***/ 224:
+/***/ (function(module, exports) {
+
+module.exports = "\n<header (mousemove)=\"handleMousemove()\" class=\"header\">\n\t<div class=\"header__name\">\n\t\t<span class=\"header__bigsexy\">BigSexy</span>\n\t\t<span class=\"header__poems\">Poems</span>\n\t</div>\n\t<div class=\"header__message\">\n\t\tInspired by <span class=\"header__inspiration\">{{ inspiration }}</span>.\n\t</div>\n</header>\n"
+
+/***/ }),
+
+/***/ 225:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+// Import the application components and services.
+var word_service_1 = __webpack_require__(58);
+var RhymesComponent = /** @class */ (function () {
+    // I initialize the rhymes component.
+    function RhymesComponent(wordService) {
+        this.wordSerivce = wordService;
+        this.isLoading = false;
+        this.query = "";
+        this.results = null;
+    }
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    RhymesComponent.prototype.handleSubmit = function () {
+        var _this = this;
+        if (!this.query) {
+            return;
+        }
+        this.isLoading = true;
+        this.wordSerivce
+            .getRhymes(this.query)
+            .then(function (response) {
+            _this.isLoading = false;
+            _this.results = {
+                count: response.words.length,
+                groups: [
+                    { syllableCount: 1, rhymes: [] },
+                    { syllableCount: 2, rhymes: [] },
+                    { syllableCount: 3, rhymes: [] },
+                    { syllableCount: 4, rhymes: [] },
+                    { syllableCount: 5, rhymes: [] },
+                    { syllableCount: 6, rhymes: [] }
+                ]
+            };
+            for (var _i = 0, _a = response.words; _i < _a.length; _i++) {
+                var word = _a[_i];
+                if ((word.syllableCount > 6) || (word.syllableCount < 1)) {
+                    continue;
+                }
+                _this.results.groups[word.syllableCount - 1].rhymes.push({
+                    word: word.value,
+                    isStrongMatch: word.isStrongMatch
+                });
+            }
+            _this.results.groups = _this.results.groups
+                .filter(function (group) {
+                return (group.rhymes.length);
+            })
+                .map(function (group) {
+                return ({
+                    syllableCount: group.syllableCount,
+                    rhymes: group.rhymes.sort(function (a, b) {
+                        var wordA = a.word.toLowerCase();
+                        var wordB = b.word.toLowerCase();
+                        return ((wordA < wordB) ? -1 : 1);
+                    })
+                });
+            });
+        })
+            .catch(function (error) {
+            _this.isLoading = false;
+            console.error(error);
+        });
+    };
+    RhymesComponent = __decorate([
+        core_1.Component({
+            selector: "bs-rhymes",
+            styles: [__webpack_require__(226)],
+            template: __webpack_require__(227)
+        }),
+        __metadata("design:paramtypes", [word_service_1.WordService])
+    ], RhymesComponent);
+    return RhymesComponent;
+}());
+exports.RhymesComponent = RhymesComponent;
+
+
+/***/ }),
+
+/***/ 226:
+/***/ (function(module, exports) {
+
+module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15px ;\n}\n.header__title {\n  font-family: \"Roboto\";\n  font-size: 22px ;\n  line-height: 27px ;\n  margin-bottom: 5px ;\n}\n.header__description {\n  font-size: 16px ;\n  line-height: 21px ;\n}\n.title {\n  display: flex ;\n}\n.title__bigsexy {\n  font-weight: 300 ;\n}\n.title__rhymes {\n  font-weight: 900 ;\n}\n.body {\n  background-color: #F0F0F0;\n  padding: 22px 22px 22px 22px ;\n}\n.search {\n  display: flex ;\n  margin: 0px 0px 0px 0px ;\n}\n.search__input {\n  flex: 1 1 auto ;\n  font-size: 18px ;\n  padding: 8px 5px 7px 10px ;\n}\n.search__submit {\n  flex: 0 1 auto ;\n  font-size: 18px ;\n  margin-left: 10px ;\n  padding-left: 15px ;\n  padding-right: 15px ;\n}\n.loading,\n.no-results {\n  color: #AAAAAA;\n  font-style: italic ;\n  margin: 50px 0px 40px 0px ;\n  text-align: center ;\n}\n.results__group {\n  font-size: 16px ;\n  line-height: 21px ;\n  margin-top: 20px ;\n}\n.results__label {\n  font-weight: 600 ;\n  margin-bottom: 6px ;\n}\n.results__value {\n  display: flex ;\n  flex-wrap: wrap ;\n  line-height: 25px ;\n}\n.results__token {\n  letter-spacing: 0.5px;\n  margin-right: 8px ;\n}\n.results__token--emphasize {\n  font-weight: 600 ;\n}\n"
+
+/***/ }),
+
+/***/ 227:
+/***/ (function(module, exports) {
+
+module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__rhymes\">Rhymes</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that rhyme well with each other.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( results && results.count )\" class=\"results\">\n\t\t\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.syllableCount }}\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount === 1 )\">Syllable:</ng-template>\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount > 1 )\">Syllables:</ng-template>\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let rhyme of group.rhymes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"rhyme.isStrongMatch\">\n\t\t\t\t\t{{ rhyme.word }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
+
+/***/ }),
+
+/***/ 228:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var common_1 = __webpack_require__(39);
+var forms_1 = __webpack_require__(229);
+var core_1 = __webpack_require__(6);
+// Import the application components and services.
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+// The goal of the SharedModule is to organize declarations and other modules that will
+// be imported into other modules (for rendering). This module should NOT contain any
+// service providers (those are in the CoreModule).
+var SharedModule = /** @class */ (function () {
+    function SharedModule() {
+    }
+    SharedModule = __decorate([
+        core_1.NgModule({
+            imports: [
+                common_1.CommonModule,
+                forms_1.FormsModule
+            ],
+            exports: [
+                common_1.CommonModule,
+                forms_1.FormsModule
+            ],
+            declarations: []
+        })
+    ], SharedModule);
+    return SharedModule;
+}());
+exports.SharedModule = SharedModule;
+
+
+/***/ }),
+
+/***/ 229:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -152,10 +745,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FormsModule", function() { return FormsModule; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ReactiveFormsModule", function() { return ReactiveFormsModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tslib__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_operators__ = __webpack_require__(81);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_platform_browser__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_operators__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_platform_browser__ = __webpack_require__(57);
 /**
  * @license Angular v6.1.0
  * (c) 2010-2018 Google, Inc. https://angular.io/
@@ -5706,7 +6299,7 @@ var ReactiveFormsModule = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 213:
+/***/ 230:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5722,357 +6315,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
-var core_1 = __webpack_require__(10);
-// Import the application components and services.
-// import { DatamuseClient } from "./shared/services/datamuse-client";
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-var AppComponent = /** @class */ (function () {
-    // I initialize the app-component.
-    function AppComponent() {
-        this.copyright = (new Date()).getFullYear();
-    }
-    AppComponent = __decorate([
-        core_1.Component({
-            selector: "my-app",
-            styles: [__webpack_require__(214)],
-            template: __webpack_require__(215)
-        }),
-        __metadata("design:paramtypes", [])
-    ], AppComponent);
-    return AppComponent;
-}());
-exports.AppComponent = AppComponent;
-
-
-/***/ }),
-
-/***/ 214:
-/***/ (function(module, exports) {
-
-module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 20px ;\n}\n.canvas {\n  margin: 30px 0px 30px 0px ;\n}\n.palettes {\n  display: flex ;\n}\n.palettes__rhymes {\n  flex: 1 1 50% ;\n}\n.palettes__sync {\n  flex: 0 1 auto ;\n  padding: 75px 20px 20px 20px ;\n}\n.palettes__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
-
-/***/ }),
-
-/***/ 215:
-/***/ (function(module, exports) {
-
-module.exports = "\n<bs-header class=\"header\"></bs-header>\n<bs-canvas class=\"canvas\"></bs-canvas>\n\n<div class=\"palettes\">\n\t<div class=\"palettes__rhymes\">\n\t\t<bs-rhymes></bs-rhymes>\n\t</div>\n\t<div class=\"palettes__sync\">\n\t\t<bs-sync></bs-sync>\n\t</div>\n\t<div class=\"palettes__synonyms\">\n\t\t<bs-synonyms></bs-synonyms>\n\t</div>\n</div>\n\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by <a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
-
-/***/ }),
-
-/***/ 216:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
-var word_service_1 = __webpack_require__(236);
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-var CanvasComponent = /** @class */ (function () {
-    // I initialize the canvas-component.
-    function CanvasComponent(wordService) {
-        this.wordService = wordService;
-        this.poem = "hello world\n\nwhat it be like";
-        this.syllableCounts = [3, 0, 4];
-    }
-    CanvasComponent.prototype.doit = function () {
-        var _this = this;
-        var sanitizedPoem = this.poem
-            .toLowerCase()
-            .replace(/[^\w\s-]/gi, "");
-        var tokens = sanitizedPoem.match(/\S+/g);
-        var uniqueWords = tokens.reduce(function (reduction, token) {
-            reduction[token] = 0;
-            return (reduction);
-        }, Object.create(null));
-        this.wordService
-            .getSyllableCounts(Object.keys(uniqueWords))
-            .then(function (counts) {
-            console.log(counts);
-            _this.syllableCounts = sanitizedPoem
-                .split(/\r\n?|\n/g)
-                .map(function (line) {
-                var tokens = line.match(/\S+/g);
-                if (!tokens) {
-                    return (0);
-                }
-                var count = tokens.reduce(function (reduction, token) {
-                    return (reduction + (counts[token] || 0));
-                }, 0);
-                return (count);
-            });
-        })
-            .catch(function (error) {
-            console.error(error);
-        });
-    };
-    CanvasComponent = __decorate([
-        core_1.Component({
-            selector: "bs-canvas",
-            styles: [__webpack_require__(217)],
-            template: __webpack_require__(218)
-        }),
-        __metadata("design:paramtypes", [word_service_1.WordService])
-    ], CanvasComponent);
-    return CanvasComponent;
-}());
-exports.CanvasComponent = CanvasComponent;
-
-
-/***/ }),
-
-/***/ 217:
-/***/ (function(module, exports) {
-
-module.exports = ":host {\n  display: block ;\n}\n.canvas {\n  border: 3px solid #CCCCCC;\n  display: flex ;\n  min-height: 300px ;\n}\n.canvas__input,\n.canvas__syllables {\n  border: 0px ;\n  font-size: 20px ;\n  line-height: 30px ;\n  padding: 20px 22px 20px 22px ;\n}\n.canvas__input {\n  background-color: #FAFAFA;\n  flex: 1 1 100% ;\n  font-family: inherit ;\n  font-weight: 300 ;\n}\n.canvas__syllables {\n  background-color: #EAEAEA;\n  color: #999999;\n  flex: 0 1 70px ;\n  font-weight: 400 ;\n  list-style-type: none ;\n  margin: 0px 0px 0px 0px ;\n  overflow: hidden ;\n  text-align: center ;\n}\n.canvas__syllable {\n  margin: 0px 0px 0px 0px ;\n  padding: 0px 0px 0px 0px ;\n}\n.canvas__syllable--none {\n  visibility: hidden ;\n}\n"
-
-/***/ }),
-
-/***/ 218:
-/***/ (function(module, exports) {
-
-module.exports = "\n<div class=\"canvas\">\n\t<textarea [(ngModel)]=\"poem\" class=\"canvas__input\"></textarea>\n\t<ul class=\"canvas__syllables\">\n\t\t<li\n\t\t\t*ngFor=\"let count of syllableCounts\"\n\t\t\tclass=\"canvas__syllable\"\n\t\t\t[class.canvas__syllable--none]=\"( count === 0 )\">\n\t\t\t{{ count }}\n\t\t</li>\n\t</ul>\n</div>\n\n<a (click)=\"doit()\">Calculate syllables</a>\n"
-
-/***/ }),
-
-/***/ 219:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-var HeaderComponent = /** @class */ (function () {
-    // I initialize the header-component.
-    function HeaderComponent() {
-        this.inspiration = "beauty";
-        this.lastRotatedAt = Date.now();
-        this.sources = [
-            "anger",
-            "beauty",
-            "bliss",
-            "devotion",
-            "desire",
-            "excitement",
-            "fate",
-            "fury",
-            "grace",
-            "honor",
-            "instinct",
-            "joy",
-            "life",
-            "love",
-            "lust",
-            "passion",
-            "sex",
-            "wonder"
-        ];
-    }
-    // ---
-    // PUBLIC METHODS.
-    // ---
-    // I handle the mousemove event on the header, rotating the source of inspiration
-    // in response to the user interaction.
-    HeaderComponent.prototype.handleMousemove = function () {
-        var now = Date.now();
-        var delta = (now - this.lastRotatedAt);
-        if (delta > 250) {
-            this.rotateInspiration();
-            this.lastRotatedAt = now;
-        }
-    };
-    // ---
-    // PRIVATE METHODS.
-    // ---
-    // I rotate the inspiration, selecting the next source at random.
-    HeaderComponent.prototype.rotateInspiration = function () {
-        var nextInspiration = this.inspiration;
-        while (nextInspiration === this.inspiration) {
-            nextInspiration = this.sources[Math.floor(Math.random() * this.sources.length)];
-        }
-        this.inspiration = nextInspiration;
-    };
-    HeaderComponent = __decorate([
-        core_1.Component({
-            selector: "bs-header",
-            styles: [__webpack_require__(220)],
-            template: __webpack_require__(221)
-        }),
-        __metadata("design:paramtypes", [])
-    ], HeaderComponent);
-    return HeaderComponent;
-}());
-exports.HeaderComponent = HeaderComponent;
-
-
-/***/ }),
-
-/***/ 220:
-/***/ (function(module, exports) {
-
-module.exports = ":host {\n  display: block ;\n}\n.header {\n  display: flex ;\n  font-family: \"Roboto\";\n  font-size: 36px ;\n  height: 50px ;\n  line-height: 50px ;\n}\n.header__name {\n  color: #121212;\n  display: flex ;\n  flex: 0 1 auto ;\n  padding-right: 30px ;\n}\n.header__message {\n  border-left: 2px solid #C8C8C8;\n  color: #666666;\n  flex: 1 1 auto ;\n  font-weight: 100 ;\n  padding-left: 30px ;\n}\n.header__bigsexy {\n  font-weight: 900 ;\n}\n.header__poems {\n  font-weight: 300 ;\n}\n"
-
-/***/ }),
-
-/***/ 221:
-/***/ (function(module, exports) {
-
-module.exports = "\n<header (mousemove)=\"handleMousemove()\" class=\"header\">\n\t<div class=\"header__name\">\n\t\t<span class=\"header__bigsexy\">BigSexy</span>\n\t\t<span class=\"header__poems\">Poems</span>\n\t</div>\n\t<div class=\"header__message\">\n\t\tInspired by <span class=\"header__inspiration\">{{ inspiration }}</span>.\n\t</div>\n</header>\n"
-
-/***/ }),
-
-/***/ 222:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
-// Import the application components and services.
-var word_service_1 = __webpack_require__(236);
-var RhymesComponent = /** @class */ (function () {
-    // I initialize the rhymes component.
-    function RhymesComponent(wordService) {
-        this.wordSerivce = wordService;
-        this.isLoading = false;
-        this.query = "";
-        this.results = null;
-    }
-    // ---
-    // PUBLIC METHODS.
-    // ---
-    RhymesComponent.prototype.handleSubmit = function () {
-        var _this = this;
-        if (!this.query) {
-            return;
-        }
-        this.isLoading = true;
-        this.wordSerivce
-            .getRhymes(this.query)
-            .then(function (response) {
-            _this.isLoading = false;
-            _this.results = {
-                count: response.words.length,
-                groups: [
-                    { syllableCount: 1, rhymes: [] },
-                    { syllableCount: 2, rhymes: [] },
-                    { syllableCount: 3, rhymes: [] },
-                    { syllableCount: 4, rhymes: [] },
-                    { syllableCount: 5, rhymes: [] },
-                    { syllableCount: 6, rhymes: [] }
-                ]
-            };
-            for (var _i = 0, _a = response.words; _i < _a.length; _i++) {
-                var word = _a[_i];
-                if ((word.syllableCount > 6) || (word.syllableCount < 1)) {
-                    continue;
-                }
-                _this.results.groups[word.syllableCount - 1].rhymes.push({
-                    word: word.value,
-                    isStrongMatch: word.isStrongMatch
-                });
-            }
-            _this.results.groups = _this.results.groups
-                .filter(function (group) {
-                return (group.rhymes.length);
-            })
-                .map(function (group) {
-                return ({
-                    syllableCount: group.syllableCount,
-                    rhymes: group.rhymes.sort(function (a, b) {
-                        var wordA = a.word.toLowerCase();
-                        var wordB = b.word.toLowerCase();
-                        return ((wordA < wordB) ? -1 : 1);
-                    })
-                });
-            });
-        })
-            .catch(function (error) {
-            _this.isLoading = false;
-            console.error(error);
-        });
-    };
-    RhymesComponent = __decorate([
-        core_1.Component({
-            selector: "bs-rhymes",
-            styles: [__webpack_require__(223)],
-            template: __webpack_require__(224)
-        }),
-        __metadata("design:paramtypes", [word_service_1.WordService])
-    ], RhymesComponent);
-    return RhymesComponent;
-}());
-exports.RhymesComponent = RhymesComponent;
-
-
-/***/ }),
-
-/***/ 223:
-/***/ (function(module, exports) {
-
-module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15px ;\n}\n.header__title {\n  font-family: \"Roboto\";\n  font-size: 22px ;\n  line-height: 27px ;\n  margin-bottom: 5px ;\n}\n.header__description {\n  font-size: 16px ;\n  line-height: 21px ;\n}\n.title {\n  display: flex ;\n}\n.title__bigsexy {\n  font-weight: 300 ;\n}\n.title__rhymes {\n  font-weight: 900 ;\n}\n.body {\n  background-color: #F0F0F0;\n  padding: 22px 22px 22px 22px ;\n}\n.search {\n  display: flex ;\n  margin: 0px 0px 0px 0px ;\n}\n.search__input {\n  flex: 1 1 auto ;\n  font-size: 18px ;\n  padding: 8px 5px 7px 10px ;\n}\n.search__submit {\n  flex: 0 1 auto ;\n  font-size: 18px ;\n  margin-left: 10px ;\n  padding-left: 15px ;\n  padding-right: 15px ;\n}\n.loading,\n.no-results {\n  color: #AAAAAA;\n  font-style: italic ;\n  margin: 50px 0px 40px 0px ;\n  text-align: center ;\n}\n.results__group {\n  font-size: 16px ;\n  line-height: 21px ;\n  margin-top: 20px ;\n}\n.results__label {\n  font-weight: 600 ;\n  margin-bottom: 6px ;\n}\n.results__value {\n  display: flex ;\n  flex-wrap: wrap ;\n  line-height: 25px ;\n}\n.results__token {\n  letter-spacing: 0.5px;\n  margin-right: 8px ;\n}\n.results__token--emphasize {\n  font-weight: 600 ;\n}\n"
-
-/***/ }),
-
-/***/ 224:
-/***/ (function(module, exports) {
-
-module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__rhymes\">Rhymes</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that rhyme well with each other.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( results && results.count )\" class=\"results\">\n\t\t\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.syllableCount }}\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount === 1 )\">Syllable:</ng-template>\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount > 1 )\">Syllables:</ng-template>\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let rhyme of group.rhymes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"rhyme.isStrongMatch\">\n\t\t\t\t\t{{ rhyme.word }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
-
-/***/ }),
-
-/***/ 225:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
+var core_1 = __webpack_require__(6);
 // Import the application components and services.
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -6084,8 +6327,8 @@ var SyncComponent = /** @class */ (function () {
     SyncComponent = __decorate([
         core_1.Component({
             selector: "bs-sync",
-            styles: [__webpack_require__(226)],
-            template: __webpack_require__(227)
+            styles: [__webpack_require__(231)],
+            template: __webpack_require__(232)
         }),
         __metadata("design:paramtypes", [])
     ], SyncComponent);
@@ -6096,21 +6339,21 @@ exports.SyncComponent = SyncComponent;
 
 /***/ }),
 
-/***/ 226:
+/***/ 231:
 /***/ (function(module, exports) {
 
 module.exports = ":host {\n  display: block ;\n}\n.toggle {\n  display: flex ;\n  flex-direction: column ;\n  align-items: center ;\n}\n.toggle__label {\n  font-size: 14px ;\n  font-weight: 300 ;\n  margin-bottom: 5px ;\n}\n"
 
 /***/ }),
 
-/***/ 227:
+/***/ 232:
 /***/ (function(module, exports) {
 
 module.exports = "\n<div class=\"toggle\">\n\t<label for=\"toggle__input\" class=\"toggle__label\">Sync</label>\n\t<input type=\"checkbox\" id=\"toggle__input\" class=\"toggle__input\" />\n</div>\n"
 
 /***/ }),
 
-/***/ 228:
+/***/ 233:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6126,8 +6369,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
-var core_1 = __webpack_require__(10);
-var word_service_1 = __webpack_require__(236);
+var core_1 = __webpack_require__(6);
+var word_service_1 = __webpack_require__(58);
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 var SynonymsComponent = /** @class */ (function () {
@@ -6170,8 +6413,8 @@ var SynonymsComponent = /** @class */ (function () {
     SynonymsComponent = __decorate([
         core_1.Component({
             selector: "bs-synonyms",
-            styles: [__webpack_require__(229)],
-            template: __webpack_require__(230)
+            styles: [__webpack_require__(234)],
+            template: __webpack_require__(235)
         }),
         __metadata("design:paramtypes", [word_service_1.WordService])
     ], SynonymsComponent);
@@ -6182,21 +6425,21 @@ exports.SynonymsComponent = SynonymsComponent;
 
 /***/ }),
 
-/***/ 229:
+/***/ 234:
 /***/ (function(module, exports) {
 
 module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15px ;\n}\n.header__title {\n  font-family: \"Roboto\";\n  font-size: 22px ;\n  line-height: 27px ;\n  margin-bottom: 5px ;\n}\n.header__description {\n  font-size: 16px ;\n  line-height: 21px ;\n}\n.title {\n  display: flex ;\n}\n.title__bigsexy {\n  font-weight: 300 ;\n}\n.title__synonyms {\n  font-weight: 900 ;\n}\n.body {\n  background-color: #F0F0F0;\n  padding: 22px 22px 22px 22px ;\n}\n.search {\n  display: flex ;\n  margin: 0px 0px 0px 0px ;\n}\n.search__input {\n  flex: 1 1 auto ;\n  font-size: 18px ;\n  padding: 8px 5px 7px 10px ;\n}\n.search__submit {\n  flex: 0 1 auto ;\n  font-size: 18px ;\n  margin-left: 10px ;\n  padding-left: 15px ;\n  padding-right: 15px ;\n}\n.loading,\n.no-results {\n  color: #AAAAAA;\n  font-style: italic ;\n  margin: 50px 0px 40px 0px ;\n  text-align: center ;\n}\n.results__group {\n  font-size: 16px ;\n  line-height: 21px ;\n  margin-top: 20px ;\n}\n.results__label {\n  font-weight: 600 ;\n  margin-bottom: 6px ;\n}\n.results__value {\n  display: flex ;\n  flex-wrap: wrap ;\n  line-height: 25px ;\n}\n.results__token {\n  font-weight: 300 ;\n  letter-spacing: 0.5px;\n  margin-right: 8px ;\n}\n.results__token--emphasize {\n  font-weight: 600 ;\n}\n"
 
 /***/ }),
 
-/***/ 230:
+/***/ 235:
 /***/ (function(module, exports) {
 
 module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<div class=\"results\">\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSynonyms:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of synonyms; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tGeneralization:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of generalizations; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSimilar Meaning:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of meansLikes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\t\t\n\t</div>\n\n</div>\n"
 
 /***/ }),
 
-/***/ 232:
+/***/ 58:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6207,41 +6450,257 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
-var common_1 = __webpack_require__(92);
-var forms_1 = __webpack_require__(212);
-var core_1 = __webpack_require__(10);
+var core_1 = __webpack_require__(6);
 // Import the application components and services.
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-// The goal of the SharedModule is to organize declarations and other modules that will
-// be imported into other modules (for rendering). This module should NOT contain any
-// service providers (those are in the CoreModule).
-var SharedModule = /** @class */ (function () {
-    function SharedModule() {
+var datamuse_client_1 = __webpack_require__(218);
+var storage_service_1 = __webpack_require__(219);
+var WordService = /** @class */ (function () {
+    // I initialize the word service.
+    function WordService(datamuseClient, storageService) {
+        this.datamuseClient = datamuseClient;
+        this.storageService = storageService;
+        this.syllableCountCache = Object.create(null);
+        var persistedCache = this.storageService.getItem("syllable-counts");
+        if (persistedCache) {
+            console.log(persistedCache);
+            Object.assign(this.syllableCountCache, persistedCache);
+        }
     }
-    SharedModule = __decorate([
-        core_1.NgModule({
-            imports: [
-                common_1.CommonModule,
-                forms_1.FormsModule
-            ],
-            exports: [
-                common_1.CommonModule,
-                forms_1.FormsModule
-            ],
-            declarations: []
-        })
-    ], SharedModule);
-    return SharedModule;
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    WordService.prototype.getGeneralizations = function (word) {
+        return __awaiter(this, void 0, void 0, function () {
+            var rawResults, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
+                            rel_gen: word,
+                            md: "s",
+                            max: 500
+                        })];
+                    case 1:
+                        rawResults = _a.sent();
+                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            return ({
+                                value: item.word,
+                                syllableCount: (item.numSyllables || 0),
+                                isStrongMatch: false,
+                                score: item.score
+                            });
+                        });
+                        return [2 /*return*/, ({
+                                query: word,
+                                words: results
+                            })];
+                }
+            });
+        });
+    };
+    WordService.prototype.getMeansLikes = function (word) {
+        return __awaiter(this, void 0, void 0, function () {
+            var rawResults, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
+                            ml: word,
+                            md: "s",
+                            max: 500
+                        })];
+                    case 1:
+                        rawResults = _a.sent();
+                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            return ({
+                                value: item.word,
+                                syllableCount: (item.numSyllables || 0),
+                                isStrongMatch: false,
+                                score: item.score
+                            });
+                        });
+                        return [2 /*return*/, ({
+                                query: word,
+                                words: results
+                            })];
+                }
+            });
+        });
+    };
+    WordService.prototype.getRhymes = function (word) {
+        return __awaiter(this, void 0, void 0, function () {
+            var rawResults, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
+                            rel_rhy: word,
+                            md: "s",
+                            max: 500
+                        })];
+                    case 1:
+                        rawResults = _a.sent();
+                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            // The score that is passed back from Datamuse is (documented as
+                            // being) not interpretable as anything concrete - it is merely a way
+                            // to rank results. As such, we're going to consider the first 80% of
+                            // the results to be "strong" matches; with the caveat that anything
+                            // less that 100 is not a strong match. Just making it up as we go
+                            // here :D 
+                            if (item.score < 100) {
+                                var isStrongMatch = false;
+                            }
+                            else {
+                                var isStrongMatch = (index <= Math.max(collection.length * 0.8));
+                            }
+                            return ({
+                                value: item.word,
+                                syllableCount: (item.numSyllables || 0),
+                                isStrongMatch: isStrongMatch,
+                                score: item.score
+                            });
+                        });
+                        return [2 /*return*/, ({
+                                query: word,
+                                words: results
+                            })];
+                }
+            });
+        });
+    };
+    WordService.prototype.getSyllableCounts = function (words) {
+        return __awaiter(this, void 0, void 0, function () {
+            var unknownWords, promises, rawResults, results;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        unknownWords = words.filter(function (word) {
+                            return (!(word in _this.syllableCountCache));
+                        });
+                        promises = unknownWords.map(function (word) {
+                            var promise = _this.datamuseClient.getWords({
+                                sp: word,
+                                qe: "sp",
+                                md: "s",
+                                max: 1
+                            });
+                            return (promise);
+                        });
+                        if (!unknownWords.length) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Promise.all(promises)];
+                    case 1:
+                        rawResults = _a.sent();
+                        unknownWords.forEach(function (word, index) {
+                            if (rawResults[index].length && (rawResults[index][0].word === word)) {
+                                _this.syllableCountCache[word] = rawResults[index][0].numSyllables;
+                            }
+                            else {
+                                _this.syllableCountCache[word] = 0;
+                            }
+                        });
+                        this.storageService.setItem("syllable-counts", this.syllableCountCache);
+                        _a.label = 2;
+                    case 2:
+                        results = words.reduce(function (reduction, word) {
+                            reduction[word] = _this.syllableCountCache[word];
+                            return (reduction);
+                        }, {});
+                        return [2 /*return*/, (results)];
+                }
+            });
+        });
+    };
+    WordService.prototype.getSynonyms = function (word) {
+        return __awaiter(this, void 0, void 0, function () {
+            var rawResults, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
+                            rel_syn: word,
+                            md: "s",
+                            max: 500
+                        })];
+                    case 1:
+                        rawResults = _a.sent();
+                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            return ({
+                                value: item.word,
+                                syllableCount: (item.numSyllables || 0),
+                                isStrongMatch: false,
+                                score: item.score
+                            });
+                        });
+                        return [2 /*return*/, ({
+                                query: word,
+                                words: results
+                            })];
+                }
+            });
+        });
+    };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    // I remove any Datamuse matches that don't have a score. If there is no score, then
+    // the word or phrase barely matches the query. It's probably not worth returning.
+    WordService.prototype.filterOutScorelessWords = function (results) {
+        var filteredResults = results.filter(function (result) {
+            return ("score" in result);
+        });
+        return (filteredResults);
+    };
+    WordService = __decorate([
+        core_1.Injectable({
+            providedIn: "root"
+        }),
+        __metadata("design:paramtypes", [datamuse_client_1.DatamuseClient, storage_service_1.StorageService])
+    ], WordService);
+    return WordService;
 }());
-exports.SharedModule = SharedModule;
+exports.WordService = WordService;
 
 
 /***/ }),
 
-/***/ 234:
+/***/ 94:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6277,10 +6736,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "XhrFactory", function() { return XhrFactory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HttpXsrfTokenExtractor", function() { return HttpXsrfTokenExtractor; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tslib__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_operators__ = __webpack_require__(81);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_common__ = __webpack_require__(92);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_operators__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_common__ = __webpack_require__(39);
 /**
  * @license Angular v6.1.0
  * (c) 2010-2018 Google, Inc. https://angular.io/
@@ -8235,464 +8694,6 @@ var HttpClientJsonpModule = /** @class */ (function () {
 //# sourceMappingURL=http.js.map
 
 
-/***/ }),
-
-/***/ 235:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var http_1 = __webpack_require__(234);
-var core_1 = __webpack_require__(10);
-var DatamuseClient = /** @class */ (function () {
-    // I initialize the datamuse client.
-    function DatamuseClient(httpClient) {
-        this.httpClient = httpClient;
-    }
-    // ---
-    // PUBLIC METHODS.
-    // ---
-    // I get Datamuse suggestions based on the given configuration.
-    DatamuseClient.prototype.getSuggestions = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.makeRequest("sug", config)];
-                    case 1: return [2 /*return*/, (_a.sent())];
-                }
-            });
-        });
-    };
-    // I get Datamuse words based on the given configuration.
-    DatamuseClient.prototype.getWords = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.makeRequest("words", config)];
-                    case 1: return [2 /*return*/, (_a.sent())];
-                }
-            });
-        });
-    };
-    // ---
-    // PRIVATE METHODS.
-    // ---
-    // I make the HTTP request to the Datamuse API.
-    DatamuseClient.prototype.makeRequest = function (resource, config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.httpClient
-                            .get("https://api.datamuse.com/" + resource, {
-                            params: this.makeRequestParams(config)
-                        })
-                            .toPromise()];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, (result)];
-                }
-            });
-        });
-    };
-    // I take the various configuration objects and normalize them into a set of request
-    // parameters that can be used with the HttpClient.
-    DatamuseClient.prototype.makeRequestParams = function (config) {
-        var params = {
-            max: "10"
-        };
-        for (var _i = 0, _a = Object.keys(config); _i < _a.length; _i++) {
-            var key = _a[_i];
-            params[key] = config[key].toString();
-        }
-        return (params);
-    };
-    DatamuseClient = __decorate([
-        core_1.Injectable({
-            providedIn: "root"
-        }),
-        __metadata("design:paramtypes", [http_1.HttpClient])
-    ], DatamuseClient);
-    return DatamuseClient;
-}());
-exports.DatamuseClient = DatamuseClient;
-
-
-/***/ }),
-
-/***/ 236:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
-// Import the application components and services.
-var datamuse_client_1 = __webpack_require__(235);
-var storage_service_1 = __webpack_require__(237);
-var WordService = /** @class */ (function () {
-    // I initialize the word service.
-    function WordService(datamuseClient, storageService) {
-        this.datamuseClient = datamuseClient;
-        this.storageService = storageService;
-        this.syllableCountCache = Object.create(null);
-        var persistedCache = this.storageService.getItem("syllable-counts");
-        if (persistedCache) {
-            console.log(persistedCache);
-            Object.assign(this.syllableCountCache, persistedCache);
-        }
-    }
-    // ---
-    // PUBLIC METHODS.
-    // ---
-    WordService.prototype.getGeneralizations = function (word) {
-        return __awaiter(this, void 0, void 0, function () {
-            var rawResults, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
-                            rel_gen: word,
-                            md: "s",
-                            max: 500
-                        })];
-                    case 1:
-                        rawResults = _a.sent();
-                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
-                            return ({
-                                value: item.word,
-                                syllableCount: (item.numSyllables || 0),
-                                isStrongMatch: false,
-                                score: item.score
-                            });
-                        });
-                        return [2 /*return*/, ({
-                                query: word,
-                                words: results
-                            })];
-                }
-            });
-        });
-    };
-    WordService.prototype.getMeansLikes = function (word) {
-        return __awaiter(this, void 0, void 0, function () {
-            var rawResults, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
-                            ml: word,
-                            md: "s",
-                            max: 500
-                        })];
-                    case 1:
-                        rawResults = _a.sent();
-                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
-                            return ({
-                                value: item.word,
-                                syllableCount: (item.numSyllables || 0),
-                                isStrongMatch: false,
-                                score: item.score
-                            });
-                        });
-                        return [2 /*return*/, ({
-                                query: word,
-                                words: results
-                            })];
-                }
-            });
-        });
-    };
-    WordService.prototype.getRhymes = function (word) {
-        return __awaiter(this, void 0, void 0, function () {
-            var rawResults, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
-                            rel_rhy: word,
-                            md: "s",
-                            max: 500
-                        })];
-                    case 1:
-                        rawResults = _a.sent();
-                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
-                            // The score that is passed back from Datamuse is (documented as
-                            // being) not interpretable as anything concrete - it is merely a way
-                            // to rank results. As such, we're going to consider the first 80% of
-                            // the results to be "strong" matches; with the caveat that anything
-                            // less that 100 is not a strong match. Just making it up as we go
-                            // here :D 
-                            if (item.score < 100) {
-                                var isStrongMatch = false;
-                            }
-                            else {
-                                var isStrongMatch = (index <= Math.max(collection.length * 0.8));
-                            }
-                            return ({
-                                value: item.word,
-                                syllableCount: (item.numSyllables || 0),
-                                isStrongMatch: isStrongMatch,
-                                score: item.score
-                            });
-                        });
-                        return [2 /*return*/, ({
-                                query: word,
-                                words: results
-                            })];
-                }
-            });
-        });
-    };
-    WordService.prototype.getSyllableCounts = function (words) {
-        return __awaiter(this, void 0, void 0, function () {
-            var unknownWords, promises, rawResults, results;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        unknownWords = words.filter(function (word) {
-                            return (!(word in _this.syllableCountCache));
-                        });
-                        promises = unknownWords.map(function (word) {
-                            var promise = _this.datamuseClient.getWords({
-                                sp: word,
-                                qe: "sp",
-                                md: "s",
-                                max: 1
-                            });
-                            return (promise);
-                        });
-                        if (!unknownWords.length) return [3 /*break*/, 2];
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 1:
-                        rawResults = _a.sent();
-                        unknownWords.forEach(function (word, index) {
-                            if (rawResults[index].length && (rawResults[index][0].word === word)) {
-                                _this.syllableCountCache[word] = rawResults[index][0].numSyllables;
-                            }
-                            else {
-                                _this.syllableCountCache[word] = 0;
-                            }
-                        });
-                        this.storageService.setItem("syllable-counts", this.syllableCountCache);
-                        _a.label = 2;
-                    case 2:
-                        results = words.reduce(function (reduction, word) {
-                            reduction[word] = _this.syllableCountCache[word];
-                            return (reduction);
-                        }, {});
-                        return [2 /*return*/, (results)];
-                }
-            });
-        });
-    };
-    WordService.prototype.getSynonyms = function (word) {
-        return __awaiter(this, void 0, void 0, function () {
-            var rawResults, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.datamuseClient.getWords({
-                            rel_syn: word,
-                            md: "s",
-                            max: 500
-                        })];
-                    case 1:
-                        rawResults = _a.sent();
-                        results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
-                            return ({
-                                value: item.word,
-                                syllableCount: (item.numSyllables || 0),
-                                isStrongMatch: false,
-                                score: item.score
-                            });
-                        });
-                        return [2 /*return*/, ({
-                                query: word,
-                                words: results
-                            })];
-                }
-            });
-        });
-    };
-    // ---
-    // PRIVATE METHODS.
-    // ---
-    // I remove any Datamuse matches that don't have a score. If there is no score, then
-    // the word or phrase barely matches the query. It's probably not worth returning.
-    WordService.prototype.filterOutScorelessWords = function (results) {
-        var filteredResults = results.filter(function (result) {
-            return ("score" in result);
-        });
-        return (filteredResults);
-    };
-    WordService = __decorate([
-        core_1.Injectable({
-            providedIn: "root"
-        }),
-        __metadata("design:paramtypes", [datamuse_client_1.DatamuseClient, storage_service_1.StorageService])
-    ], WordService);
-    return WordService;
-}());
-exports.WordService = WordService;
-
-
-/***/ }),
-
-/***/ 237:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(10);
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-var StorageService = /** @class */ (function () {
-    function StorageService() {
-    }
-    // ---
-    // PUBLIC METHODS.
-    // ---
-    StorageService.prototype.getItem = function (key) {
-        try {
-            var serializedValue = window.localStorage.getItem(this.getStorageKey(key));
-            var value = JSON.parse(serializedValue);
-            return (value);
-        }
-        catch (error) {
-            console.warn("Storage could not be read.");
-            console.error(error);
-            return (undefined);
-        }
-    };
-    StorageService.prototype.setItem = function (key, value) {
-        var _this = this;
-        window.requestAnimationFrame(function () {
-            try {
-                window.localStorage.setItem(_this.getStorageKey(key), JSON.stringify(value));
-            }
-            catch (error) {
-                console.warn("Storage could not be written.");
-                console.error(error);
-            }
-        });
-    };
-    // ---
-    // PRIVATE METHODS.
-    // ---
-    StorageService.prototype.getStorageKey = function (key) {
-        return ("big-sexy-poems:" + key.toLowerCase());
-    };
-    StorageService = __decorate([
-        core_1.Injectable({
-            providedIn: "root"
-        }),
-        __metadata("design:paramtypes", [])
-    ], StorageService);
-    return StorageService;
-}());
-exports.StorageService = StorageService;
-
-
 /***/ })
 
-},[210]);
+},[212]);
