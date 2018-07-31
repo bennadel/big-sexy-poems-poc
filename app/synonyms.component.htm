@@ -26,13 +26,15 @@
 	<!-- END: Loading Indicator. -->
 
 	<!-- BEGIN: No Results. -->
-	<div *ngIf="( results && ! results.count )" class="no-results">
-		Sorry, no rhymes found.
+	<div *ngIf="( isLoaded && ! hasResults )" class="no-results">
+		Sorry, no synonyms found.
 	</div>
 	<!-- END: No Results. -->
 
-	<div class="results">
-		<div class="results__group">
+	<!-- BEGIN: Results. -->
+	<div *ngIf="( isLoaded && hasResults )" class="results">
+
+		<div *ngIf="synonyms.length" class="results__group">
 			<div class="results__label">
 				Synonyms:
 			</div>
@@ -47,7 +49,7 @@
 			</div>
 		</div>
 
-		<div class="results__group">
+		<div *ngIf="generalizations.length" class="results__group">
 			<div class="results__label">
 				Generalization:
 			</div>
@@ -62,7 +64,7 @@
 			</div>
 		</div>
 
-		<div class="results__group">
+		<div *ngIf="meansLikes.length" class="results__group">
 			<div class="results__label">
 				Similar Meaning:
 			</div>
@@ -78,5 +80,6 @@
 		</div>
 		
 	</div>
+	<!-- END: Results. -->
 
 </div>

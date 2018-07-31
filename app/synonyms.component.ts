@@ -10,13 +10,15 @@ import { WordService } from "./shared/services/word.service";
 // ----------------------------------------------------------------------------------- //
 
 @Component({
-	selector: "bs-synonyms",
+	selector: "bsp-synonyms",
 	styleUrls: [ "./synonyms.component.less" ],
 	templateUrl: "./synonyms.component.htm"
 })
 export class SynonymsComponent {
 
 	public generalizations: Word[] | null;
+	public hasResults: boolean;
+	public isLoaded: boolean;
 	public isLoading: boolean;
 	public meansLikes: Word[] | null;
 	public query: string;
@@ -30,6 +32,8 @@ export class SynonymsComponent {
 		this.wordService = wordService;
 
 		this.generalizations = null;
+		this.hasResults = false;
+		this.isLoaded = false;
 		this.isLoading = false;
 		this.meansLikes = null;
 		this.query = "";
@@ -49,7 +53,9 @@ export class SynonymsComponent {
 
 		}
 
+		this.isLoaded = false;
 		this.isLoading = true;
+		this.hasResults = false;
 
 		Promise
 			.all([
@@ -60,17 +66,22 @@ export class SynonymsComponent {
 			.then(
 				( [ synonyms, generalizations, meansLikes ] ) => {
 
+					this.isLoaded = true;
 					this.isLoading = false;
 					this.synonyms = synonyms.words;
 					this.generalizations = generalizations.words;
 					this.meansLikes = meansLikes.words;
+
+					this.hasResults = !! ( this.synonyms.length + this.generalizations.length + this.meansLikes.length );
 
 				}
 			)
 			.catch(
 				( error ) => {
 
+					this.isLoaded = true;
 					this.isLoading = false;
+					this.hasResults = false;
 
 					console.error( error );
 
@@ -79,9 +90,5 @@ export class SynonymsComponent {
 		;
 
 	}
-
-	// ---
-	// PRIVATE METHODS.
-	// ---
 
 }

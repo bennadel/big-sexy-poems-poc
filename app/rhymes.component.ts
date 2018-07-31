@@ -24,7 +24,7 @@ interface Rhyme {
 }
 
 @Component({
-	selector: "bs-rhymes",
+	selector: "bsp-rhymes",
 	styleUrls: [ "./rhymes.component.less" ],
 	templateUrl: "./rhymes.component.htm"
 })

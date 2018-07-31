@@ -6,7 +6,7 @@ import { Component } from "@angular/core";
 // ----------------------------------------------------------------------------------- //
 
 @Component({
-	selector: "bs-header",
+	selector: "bsp-header",
 	styleUrls: [ "./header.component.less" ],
 	templateUrl: "./header.component.htm"
 })

@@ -51,7 +51,6 @@ export class WordService {
 
 		if ( persistedCache ) {
 
-			console.log( persistedCache );
 			Object.assign( this.syllableCountCache, persistedCache );
 
 		}
@@ -175,34 +174,44 @@ export class WordService {
 			}
 		);
 
-		var promises = unknownWords.map(
-			( word ) => {
-
-				var promise =  this.datamuseClient.getWords({
-					sp: word,
-					qe: "sp",
-					md: "s",
-					max: 1
-				});
-
-				return( promise );
-
-			}
-		);
-
+		// If there are any unknown words, let's populate the local cache before we
+		// process the contextual request.
 		if ( unknownWords.length ) {
+
+			var promises = unknownWords.map(
+				( word ) => {
+
+					var promise =  this.datamuseClient.getWords({
+						sp: word,
+						qe: "sp",
+						md: "s",
+						max: 1
+					});
+
+					return( promise );
+
+				}
+			);
 
 			var rawResults = await Promise.all( promises );
 			
 			unknownWords.forEach(
 				( word, index ) => {
 
+					// Since we are using the SP (spelling) end-point to gather the
+					// syllable count, there's a chance that the word that comes back is
+					// NOT the word that we requested (if the Datamuse vocabulary context
+					// doesn't recognize this word). In such a case, we want to ignore
+					// the result.
 					if ( rawResults[ index ].length && ( rawResults[ index ][ 0 ].word === word ) ) {
 
-						this.syllableCountCache[ word ] = rawResults[ index ][ 0 ].numSyllables;
+						this.syllableCountCache[ word ] = ( rawResults[ index ][ 0 ].numSyllables || 0 );
 
 					} else {
 
+						// Since the word is unrecognized, let's default to zero
+						// syllables. This will allow the calling context to figure out
+						// how it wants to best handle the "unknown" use-case.
 						this.syllableCountCache[ word ] = 0;
 
 					}
@@ -221,7 +230,7 @@ export class WordService {
 				return( reduction );
 
 			},
-			{}
+			Object.create( null )
 		);
 
 		return( results );

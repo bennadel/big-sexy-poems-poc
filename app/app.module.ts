@@ -11,7 +11,6 @@ import { CanvasComponent } from "./canvas.component";
 import { HeaderComponent } from "./header.component";
 import { RhymesComponent } from "./rhymes.component";
 import { SharedModule } from "./shared/shared.module";
-import { SyncComponent } from "./sync.component";
 import { SynonymsComponent } from "./synonyms.component";
 
 // ----------------------------------------------------------------------------------- //
@@ -32,7 +31,6 @@ import { SynonymsComponent } from "./synonyms.component";
 		CanvasComponent,
 		HeaderComponent,
 		RhymesComponent,
-		SyncComponent,
 		SynonymsComponent
 	],
 	providers: [

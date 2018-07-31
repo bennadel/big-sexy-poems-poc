@@ -38,7 +38,6 @@ var canvas_component_1 = __webpack_require__(217);
 var header_component_1 = __webpack_require__(222);
 var rhymes_component_1 = __webpack_require__(225);
 var shared_module_1 = __webpack_require__(228);
-var sync_component_1 = __webpack_require__(230);
 var synonyms_component_1 = __webpack_require__(233);
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -61,7 +60,6 @@ var AppModule = /** @class */ (function () {
                 canvas_component_1.CanvasComponent,
                 header_component_1.HeaderComponent,
                 rhymes_component_1.RhymesComponent,
-                sync_component_1.SyncComponent,
                 synonyms_component_1.SynonymsComponent
             ],
             providers: []
@@ -118,14 +116,14 @@ exports.AppComponent = AppComponent;
 /***/ 215:
 /***/ (function(module, exports) {
 
-module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 20px ;\n}\n.canvas {\n  margin: 30px 0px 30px 0px ;\n}\n.palettes {\n  display: flex ;\n}\n.palettes__rhymes {\n  flex: 1 1 50% ;\n}\n.palettes__sync {\n  flex: 0 1 auto ;\n  padding: 75px 20px 20px 20px ;\n}\n.palettes__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
+module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 25px ;\n}\n.canvas {\n  margin: 25px 0px 30px 0px ;\n}\n.palettes {\n  display: flex ;\n  justify-content: space-between;\n}\n.palettes__rhymes {\n  flex: 1 1 50% ;\n  margin-right: 50px ;\n}\n.palettes__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
 
 /***/ }),
 
 /***/ 216:
 /***/ (function(module, exports) {
 
-module.exports = "\n<bs-header class=\"header\"></bs-header>\n<bs-canvas class=\"canvas\"></bs-canvas>\n\n<div class=\"palettes\">\n\t<div class=\"palettes__rhymes\">\n\t\t<bs-rhymes></bs-rhymes>\n\t</div>\n\t<div class=\"palettes__sync\">\n\t\t<bs-sync></bs-sync>\n\t</div>\n\t<div class=\"palettes__synonyms\">\n\t\t<bs-synonyms></bs-synonyms>\n\t</div>\n</div>\n\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by <a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
+module.exports = "\n<bsp-header class=\"header\"></bsp-header>\n<bsp-canvas class=\"canvas\"></bsp-canvas>\n\n<div class=\"palettes\">\n\t<div class=\"palettes__rhymes\">\n\t\t<bsp-rhymes></bsp-rhymes>\n\t</div>\n\t<div class=\"palettes__synonyms\">\n\t\t<bsp-synonyms></bsp-synonyms>\n\t</div>\n</div>\n\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by <a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
 
 /***/ }),
 
@@ -153,33 +151,82 @@ var CanvasComponent = /** @class */ (function () {
     // I initialize the canvas-component.
     function CanvasComponent(wordService) {
         this.wordService = wordService;
-        this.poem = "hello world\n\nwhat it be like";
-        this.syllableCounts = [3, 0, 4];
+        this.poem = "";
+        this.syllableCounts = [];
+        this.syllableTimer = 0;
     }
-    CanvasComponent.prototype.doit = function () {
+    // ---
+    // PUBLIC METHODS.
+    // ---
+    CanvasComponent.prototype.handlePoemChanged = function () {
         var _this = this;
-        var sanitizedPoem = this.poem
-            .toLowerCase()
-            .replace(/[^\w\s-]/gi, "");
-        var tokens = sanitizedPoem.match(/\S+/g);
-        var uniqueWords = tokens.reduce(function (reduction, token) {
-            reduction[token] = 0;
+        clearTimeout(this.syllableTimer);
+        this.syllableTimer = setTimeout(function () {
+            _this.updateSyllableCounts();
+        }, 500);
+    };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    CanvasComponent.prototype.extractLines = function (value) {
+        return (value.trim().split(/\r\n?|\n/g));
+    };
+    CanvasComponent.prototype.extractUniqueWords = function (value) {
+        var words = this.extractWords(value)
+            .reduce(function (reduction, word) {
+            reduction[word] = true;
             return (reduction);
-        }, Object.create(null));
+        }, Object.create(null) // Initial value.
+        );
+        return (Object.keys(words));
+    };
+    CanvasComponent.prototype.extractWords = function (value) {
+        return (value.trim().match(/\S+/g) || []);
+    };
+    CanvasComponent.prototype.normalizePoemText = function (poem) {
+        var normalizedPoem = poem
+            .toLowerCase()
+            // Replace any string of word-delimiters with a space.
+            .replace(/[ _:\u2014\u2013-]+/g, " ")
+            // Strip out any constructs that don't directly influence the way in which
+            // the poem can be read out-loud.
+            .replace(/[^a-z0-9\s]/gi, "");
+        return (normalizedPoem);
+    };
+    CanvasComponent.prototype.updateSyllableCounts = function () {
+        var _this = this;
+        var poemSnapshot = this.poem;
+        var text = this.normalizePoemText(poemSnapshot);
+        var words = this.extractUniqueWords(text);
         this.wordService
-            .getSyllableCounts(Object.keys(uniqueWords))
+            .getSyllableCounts(words)
             .then(function (counts) {
-            console.log(counts);
-            _this.syllableCounts = sanitizedPoem
-                .split(/\r\n?|\n/g)
+            // If the poem changed while we were fetching syllable counts, then
+            // let's return-out. There will be some parallel request that is
+            // currently processing the newer state of the poem.
+            if (poemSnapshot !== _this.poem) {
+                return;
+            }
+            // At this point, we should be guaranteed that there is a syllable
+            // count for every word token in the normalized poem. As such, we
+            // should be able to break the poem into lines and then count the
+            // syllables in each line.
+            _this.syllableCounts = _this
+                .extractLines(text)
                 .map(function (line) {
-                var tokens = line.match(/\S+/g);
+                var tokens = _this.extractWords(line);
                 if (!tokens) {
                     return (0);
                 }
                 var count = tokens.reduce(function (reduction, token) {
-                    return (reduction + (counts[token] || 0));
-                }, 0);
+                    // If the word-service didn't recognize the given
+                    // word token, then it will return ZERO for the
+                    // syllable count. In such a case, we'll default
+                    // to using ONE syllable so that the token takes
+                    // some degree of auditory space.
+                    return (reduction + (counts[token] || 1));
+                }, 0 // Initial value.
+                );
                 return (count);
             });
         })
@@ -189,7 +236,7 @@ var CanvasComponent = /** @class */ (function () {
     };
     CanvasComponent = __decorate([
         core_1.Component({
-            selector: "bs-canvas",
+            selector: "bsp-canvas",
             styles: [__webpack_require__(220)],
             template: __webpack_require__(221)
         }),
@@ -403,14 +450,14 @@ exports.StorageService = StorageService;
 /***/ 220:
 /***/ (function(module, exports) {
 
-module.exports = ":host {\n  display: block ;\n}\n.canvas {\n  border: 3px solid #CCCCCC;\n  display: flex ;\n  min-height: 300px ;\n}\n.canvas__input,\n.canvas__syllables {\n  border: 0px ;\n  font-size: 20px ;\n  line-height: 30px ;\n  padding: 20px 22px 20px 22px ;\n}\n.canvas__input {\n  background-color: #FAFAFA;\n  flex: 1 1 100% ;\n  font-family: inherit ;\n  font-weight: 300 ;\n}\n.canvas__syllables {\n  background-color: #EAEAEA;\n  color: #999999;\n  flex: 0 1 70px ;\n  font-weight: 400 ;\n  list-style-type: none ;\n  margin: 0px 0px 0px 0px ;\n  overflow: hidden ;\n  text-align: center ;\n}\n.canvas__syllable {\n  margin: 0px 0px 0px 0px ;\n  padding: 0px 0px 0px 0px ;\n}\n.canvas__syllable--none {\n  visibility: hidden ;\n}\n"
+module.exports = ":host {\n  display: block ;\n}\n.canvas {\n  border: 3px solid #CCCCCC;\n  display: flex ;\n  font-family: \"Open Sans\";\n  min-height: 300px ;\n}\n.canvas__input,\n.canvas__syllables {\n  border: 0px ;\n  font-size: 20px ;\n  line-height: 30px ;\n  padding: 20px 22px 20px 22px ;\n}\n.canvas__input {\n  background-color: #FAFAFA;\n  flex: 1 1 100% ;\n  font-family: inherit ;\n  font-weight: 300 ;\n}\n.canvas__syllables {\n  background-color: #EAEAEA;\n  color: #999999;\n  flex: 0 1 70px ;\n  font-weight: 400 ;\n  list-style-type: none ;\n  margin: 0px 0px 0px 0px ;\n  overflow: hidden ;\n  text-align: center ;\n}\n.canvas__syllable {\n  margin: 0px 0px 0px 0px ;\n  padding: 0px 0px 0px 0px ;\n}\n.canvas__syllable--none {\n  visibility: hidden ;\n}\n"
 
 /***/ }),
 
 /***/ 221:
 /***/ (function(module, exports) {
 
-module.exports = "\n<div class=\"canvas\">\n\t<textarea [(ngModel)]=\"poem\" class=\"canvas__input\"></textarea>\n\t<ul class=\"canvas__syllables\">\n\t\t<li\n\t\t\t*ngFor=\"let count of syllableCounts\"\n\t\t\tclass=\"canvas__syllable\"\n\t\t\t[class.canvas__syllable--none]=\"( count === 0 )\">\n\t\t\t{{ count }}\n\t\t</li>\n\t</ul>\n</div>\n\n<a (click)=\"doit()\">Calculate syllables</a>\n"
+module.exports = "\n<div class=\"canvas\">\n\t<textarea\n\t\t[(ngModel)]=\"poem\"\n\t\t(ngModelChange)=\"handlePoemChanged()\"\n\t\tclass=\"canvas__input\"\n\t></textarea>\n\t<ul class=\"canvas__syllables\">\n\t\t<li\n\t\t\t*ngFor=\"let count of syllableCounts\"\n\t\t\tclass=\"canvas__syllable\"\n\t\t\t[class.canvas__syllable--none]=\"( count === 0 )\">\n\t\t\t{{ count }}\n\t\t</li>\n\t</ul>\n</div>\n"
 
 /***/ }),
 
@@ -485,7 +532,7 @@ var HeaderComponent = /** @class */ (function () {
     };
     HeaderComponent = __decorate([
         core_1.Component({
-            selector: "bs-header",
+            selector: "bsp-header",
             styles: [__webpack_require__(223)],
             template: __webpack_require__(224)
         }),
@@ -595,7 +642,7 @@ var RhymesComponent = /** @class */ (function () {
     };
     RhymesComponent = __decorate([
         core_1.Component({
-            selector: "bs-rhymes",
+            selector: "bsp-rhymes",
             styles: [__webpack_require__(226)],
             template: __webpack_require__(227)
         }),
@@ -6299,60 +6346,6 @@ var ReactiveFormsModule = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 230:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// Import the core angular services.
-var core_1 = __webpack_require__(6);
-// Import the application components and services.
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-var SyncComponent = /** @class */ (function () {
-    // I initialize the sync component.
-    function SyncComponent() {
-        // ...
-    }
-    SyncComponent = __decorate([
-        core_1.Component({
-            selector: "bs-sync",
-            styles: [__webpack_require__(231)],
-            template: __webpack_require__(232)
-        }),
-        __metadata("design:paramtypes", [])
-    ], SyncComponent);
-    return SyncComponent;
-}());
-exports.SyncComponent = SyncComponent;
-
-
-/***/ }),
-
-/***/ 231:
-/***/ (function(module, exports) {
-
-module.exports = ":host {\n  display: block ;\n}\n.toggle {\n  display: flex ;\n  flex-direction: column ;\n  align-items: center ;\n}\n.toggle__label {\n  font-size: 14px ;\n  font-weight: 300 ;\n  margin-bottom: 5px ;\n}\n"
-
-/***/ }),
-
-/***/ 232:
-/***/ (function(module, exports) {
-
-module.exports = "\n<div class=\"toggle\">\n\t<label for=\"toggle__input\" class=\"toggle__label\">Sync</label>\n\t<input type=\"checkbox\" id=\"toggle__input\" class=\"toggle__input\" />\n</div>\n"
-
-/***/ }),
-
 /***/ 233:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6378,6 +6371,8 @@ var SynonymsComponent = /** @class */ (function () {
     function SynonymsComponent(wordService) {
         this.wordService = wordService;
         this.generalizations = null;
+        this.hasResults = false;
+        this.isLoaded = false;
         this.isLoading = false;
         this.meansLikes = null;
         this.query = "";
@@ -6391,7 +6386,9 @@ var SynonymsComponent = /** @class */ (function () {
         if (!this.query) {
             return;
         }
+        this.isLoaded = false;
         this.isLoading = true;
+        this.hasResults = false;
         Promise
             .all([
             this.wordService.getSynonyms(this.query),
@@ -6400,19 +6397,23 @@ var SynonymsComponent = /** @class */ (function () {
         ])
             .then(function (_a) {
             var synonyms = _a[0], generalizations = _a[1], meansLikes = _a[2];
+            _this.isLoaded = true;
             _this.isLoading = false;
             _this.synonyms = synonyms.words;
             _this.generalizations = generalizations.words;
             _this.meansLikes = meansLikes.words;
+            _this.hasResults = !!(_this.synonyms.length + _this.generalizations.length + _this.meansLikes.length);
         })
             .catch(function (error) {
+            _this.isLoaded = true;
             _this.isLoading = false;
+            _this.hasResults = false;
             console.error(error);
         });
     };
     SynonymsComponent = __decorate([
         core_1.Component({
-            selector: "bs-synonyms",
+            selector: "bsp-synonyms",
             styles: [__webpack_require__(234)],
             template: __webpack_require__(235)
         }),
@@ -6435,7 +6436,7 @@ module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15
 /***/ 235:
 /***/ (function(module, exports) {
 
-module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<div class=\"results\">\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSynonyms:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of synonyms; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tGeneralization:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of generalizations; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSimilar Meaning:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of meansLikes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\t\t\n\t</div>\n\n</div>\n"
+module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( isLoaded && ! hasResults )\" class=\"no-results\">\n\t\tSorry, no synonyms found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( isLoaded && hasResults )\" class=\"results\">\n\n\t\t<div *ngIf=\"synonyms.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSynonyms:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of synonyms; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div *ngIf=\"generalizations.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tGeneralization:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of generalizations; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div *ngIf=\"meansLikes.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSimilar Meaning:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of meansLikes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\t\t\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
 
 /***/ }),
 
@@ -6502,7 +6503,6 @@ var WordService = /** @class */ (function () {
         this.syllableCountCache = Object.create(null);
         var persistedCache = this.storageService.getItem("syllable-counts");
         if (persistedCache) {
-            console.log(persistedCache);
             Object.assign(this.syllableCountCache, persistedCache);
         }
     }
@@ -6615,6 +6615,7 @@ var WordService = /** @class */ (function () {
                         unknownWords = words.filter(function (word) {
                             return (!(word in _this.syllableCountCache));
                         });
+                        if (!unknownWords.length) return [3 /*break*/, 2];
                         promises = unknownWords.map(function (word) {
                             var promise = _this.datamuseClient.getWords({
                                 sp: word,
@@ -6624,15 +6625,22 @@ var WordService = /** @class */ (function () {
                             });
                             return (promise);
                         });
-                        if (!unknownWords.length) return [3 /*break*/, 2];
                         return [4 /*yield*/, Promise.all(promises)];
                     case 1:
                         rawResults = _a.sent();
                         unknownWords.forEach(function (word, index) {
+                            // Since we are using the SP (spelling) end-point to gather the
+                            // syllable count, there's a chance that the word that comes back is
+                            // NOT the word that we requested (if the Datamuse vocabulary context
+                            // doesn't recognize this word). In such a case, we want to ignore
+                            // the result.
                             if (rawResults[index].length && (rawResults[index][0].word === word)) {
-                                _this.syllableCountCache[word] = rawResults[index][0].numSyllables;
+                                _this.syllableCountCache[word] = (rawResults[index][0].numSyllables || 0);
                             }
                             else {
+                                // Since the word is unrecognized, let's default to zero
+                                // syllables. This will allow the calling context to figure out
+                                // how it wants to best handle the "unknown" use-case.
                                 _this.syllableCountCache[word] = 0;
                             }
                         });
@@ -6642,7 +6650,7 @@ var WordService = /** @class */ (function () {
                         results = words.reduce(function (reduction, word) {
                             reduction[word] = _this.syllableCountCache[word];
                             return (reduction);
-                        }, {});
+                        }, Object.create(null));
                         return [2 /*return*/, (results)];
                 }
             });
