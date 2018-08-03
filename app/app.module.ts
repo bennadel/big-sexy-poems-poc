@@ -7,7 +7,7 @@ import { NgModule } from "@angular/core";
 // Import the application components and services.
 import { AppComponent } from "./app.component";
 import { CanvasComponent } from "./canvas.component";
-// import { CoreModule } from "./shared/core.module";
+import { FooterComponent } from "./footer.component";
 import { HeaderComponent } from "./header.component";
 import { RhymesComponent } from "./rhymes.component";
 import { SharedModule } from "./shared/shared.module";
@@ -23,18 +23,15 @@ import { SynonymsComponent } from "./synonyms.component";
 	imports: [
 		BrowserModule,
 		HttpClientModule,
-		// CoreModule
 		SharedModule
 	],
 	declarations: [
 		AppComponent,
 		CanvasComponent,
+		FooterComponent,
 		HeaderComponent,
 		RhymesComponent,
 		SynonymsComponent
-	],
-	providers: [
-		
 	]
 })
 export class AppModule {

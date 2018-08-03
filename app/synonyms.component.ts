@@ -4,6 +4,7 @@ import { Component } from "@angular/core";
 
 // Import the application components and services.
 import { Word } from "./shared/services/word.service";
+import { WordResults } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
 
 // ----------------------------------------------------------------------------------- //
@@ -59,9 +60,9 @@ export class SynonymsComponent {
 
 		Promise
 			.all([
-				this.wordService.getSynonyms( this.query ),
-				this.wordService.getGeneralizations( this.query ),
-				this.wordService.getMeansLikes( this.query )
+				this.handlePartialFailure( this.query, this.wordService.getSynonyms( this.query ) ),
+				this.handlePartialFailure( this.query, this.wordService.getGeneralizations( this.query ) ),
+				this.handlePartialFailure( this.query, this.wordService.getMeansLikes( this.query ) )
 			])
 			.then(
 				( [ synonyms, generalizations, meansLikes ] ) => {
@@ -88,6 +89,33 @@ export class SynonymsComponent {
 				}
 			)
 		;
+
+	}
+
+	// ---
+	// PRIVATE METHODS.
+	// ---
+
+	// If any of the word-service requests fail, we want to try and return partial
+	// results (so that we can provide a degraded experience, not a total failure). To
+	// do this, we'll catch any individual error and return a "null object" response.
+	private handlePartialFailure(
+		query: string,
+		promise: Promise<WordResults>
+		) : Promise<WordResults> {
+
+		var safePromise = promise.catch(
+			( error ) : WordResults => {
+
+				return({
+					query: query,
+					words: [] // Null response.
+				});
+
+			}
+		);
+
+		return( safePromise );
 
 	}
 

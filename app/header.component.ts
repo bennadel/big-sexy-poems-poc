@@ -25,6 +25,7 @@ export class HeaderComponent {
 
 		this.sources = [
 			"anger",
+			"awe",
 			"beauty",
 			"bliss",
 			"devotion",
@@ -39,7 +40,9 @@ export class HeaderComponent {
 			"life",
 			"love",
 			"lust",
+			"pain",
 			"passion",
+			"pleasure",
 			"sex",
 			"wonder"
 		];

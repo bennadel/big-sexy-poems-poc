@@ -6,15 +6,19 @@ import { Component } from "@angular/core";
 // ----------------------------------------------------------------------------------- //
 
 @Component({
-	selector: "my-app",
-	styleUrls: [ "./app.component.less" ],
-	templateUrl: "./app.component.htm"
+	selector: "bsp-footer",
+	styleUrls: [ "./footer.component.less" ],
+	templateUrl: "./footer.component.htm"
 })
-export class AppComponent {
+export class FooterComponent {
 
-	// I initialize the app-component.
+	public copyright: number;
+
+	// I initialize the footer-component.
 	constructor() {
-		// ...
+	
+		this.copyright = ( new Date() ).getFullYear();
+
 	}
 
 }

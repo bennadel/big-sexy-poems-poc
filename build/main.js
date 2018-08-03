@@ -34,11 +34,11 @@ var core_1 = __webpack_require__(6);
 // Import the application components and services.
 var app_component_1 = __webpack_require__(214);
 var canvas_component_1 = __webpack_require__(217);
-// import { CoreModule } from "./shared/core.module";
+var footer_component_1 = __webpack_require__(233);
 var header_component_1 = __webpack_require__(222);
 var rhymes_component_1 = __webpack_require__(225);
 var shared_module_1 = __webpack_require__(228);
-var synonyms_component_1 = __webpack_require__(233);
+var synonyms_component_1 = __webpack_require__(230);
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 var AppModule = /** @class */ (function () {
@@ -52,17 +52,16 @@ var AppModule = /** @class */ (function () {
             imports: [
                 platform_browser_1.BrowserModule,
                 http_1.HttpClientModule,
-                // CoreModule
                 shared_module_1.SharedModule
             ],
             declarations: [
                 app_component_1.AppComponent,
                 canvas_component_1.CanvasComponent,
+                footer_component_1.FooterComponent,
                 header_component_1.HeaderComponent,
                 rhymes_component_1.RhymesComponent,
                 synonyms_component_1.SynonymsComponent
-            ],
-            providers: []
+            ]
         })
     ], AppModule);
     return AppModule;
@@ -89,14 +88,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
 var core_1 = __webpack_require__(6);
-// Import the application components and services.
-// import { DatamuseClient } from "./shared/services/datamuse-client";
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 var AppComponent = /** @class */ (function () {
     // I initialize the app-component.
     function AppComponent() {
-        this.copyright = (new Date()).getFullYear();
+        // ...
     }
     AppComponent = __decorate([
         core_1.Component({
@@ -116,14 +113,14 @@ exports.AppComponent = AppComponent;
 /***/ 215:
 /***/ (function(module, exports) {
 
-module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 25px ;\n}\n.canvas {\n  margin: 25px 0px 30px 0px ;\n}\n.palettes {\n  display: flex ;\n  justify-content: space-between;\n}\n.palettes__rhymes {\n  flex: 1 1 50% ;\n  margin-right: 50px ;\n}\n.palettes__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
+module.exports = ":host {\n  color: #121212;\n  display: block ;\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 1.2rem;\n  font-weight: 300 ;\n  line-height: 1.5;\n  margin: 0px auto 0px auto ;\n  width: 1100px ;\n}\n.header {\n  margin-top: 25px ;\n}\n.canvas {\n  margin: 25px 0px 30px 0px ;\n}\n.tools {\n  display: flex ;\n  justify-content: space-between;\n}\n.tools__rhymes {\n  flex: 1 1 50% ;\n  margin-right: 50px ;\n}\n.tools__synonyms {\n  flex: 1 1 50% ;\n}\n.footer {\n  margin-bottom: 50px ;\n  margin-top: 40px ;\n}\n"
 
 /***/ }),
 
 /***/ 216:
 /***/ (function(module, exports) {
 
-module.exports = "\n<bsp-header class=\"header\"></bsp-header>\n<bsp-canvas class=\"canvas\"></bsp-canvas>\n\n<div class=\"palettes\">\n\t<div class=\"palettes__rhymes\">\n\t\t<bsp-rhymes></bsp-rhymes>\n\t</div>\n\t<div class=\"palettes__synonyms\">\n\t\t<bsp-synonyms></bsp-synonyms>\n\t</div>\n</div>\n\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by <a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
+module.exports = "\n<bsp-header class=\"header\"></bsp-header>\n<bsp-canvas class=\"canvas\"></bsp-canvas>\n\n<div class=\"tools\">\n\t<div class=\"tools__rhymes\">\n\t\t<bsp-rhymes></bsp-rhymes>\n\t</div>\n\t<div class=\"tools__synonyms\">\n\t\t<bsp-synonyms></bsp-synonyms>\n\t</div>\n</div>\n\n<bsp-footer class=\"footer\"></bsp-footer>\n\n"
 
 /***/ }),
 
@@ -396,14 +393,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
 var core_1 = __webpack_require__(6);
+var core_2 = __webpack_require__(6);
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 var StorageService = /** @class */ (function () {
-    function StorageService() {
+    // I initialize the storage service.
+    function StorageService(errorHandler) {
+        this.errorHandler = errorHandler;
     }
     // ---
     // PUBLIC METHODS.
     // ---
+    // I get the given item from storage. If the storage infrastructure is not available,
+    // "undefined" is returned.
     StorageService.prototype.getItem = function (key) {
         try {
             var serializedValue = window.localStorage.getItem(this.getStorageKey(key));
@@ -411,34 +413,39 @@ var StorageService = /** @class */ (function () {
             return (value);
         }
         catch (error) {
-            console.warn("Storage could not be read.");
-            console.error(error);
+            this.errorHandler.handleError(error);
             return (undefined);
         }
     };
+    // I store the given value at the given key.
+    // --
+    // CAUTION: The value will be serialized as a JSON string.
     StorageService.prototype.setItem = function (key, value) {
         var _this = this;
+        // Since we don't need to return any value, let's do the actual write inside of
+        // an animation frame. Since localStorage is a synchronous API, this should help
+        // prevent it from blocking the user experience (... maybe).
         window.requestAnimationFrame(function () {
             try {
                 window.localStorage.setItem(_this.getStorageKey(key), JSON.stringify(value));
             }
             catch (error) {
-                console.warn("Storage could not be written.");
-                console.error(error);
+                _this.errorHandler.handleError(error);
             }
         });
     };
     // ---
     // PRIVATE METHODS.
     // ---
+    // I return the normalized key for localStorage.
     StorageService.prototype.getStorageKey = function (key) {
         return ("big-sexy-poems:" + key.toLowerCase());
     };
     StorageService = __decorate([
-        core_1.Injectable({
+        core_2.Injectable({
             providedIn: "root"
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [core_1.ErrorHandler])
     ], StorageService);
     return StorageService;
 }());
@@ -487,6 +494,7 @@ var HeaderComponent = /** @class */ (function () {
         this.lastRotatedAt = Date.now();
         this.sources = [
             "anger",
+            "awe",
             "beauty",
             "bliss",
             "devotion",
@@ -501,7 +509,9 @@ var HeaderComponent = /** @class */ (function () {
             "life",
             "love",
             "lust",
+            "pain",
             "passion",
+            "pleasure",
             "sex",
             "wonder"
         ];
@@ -690,7 +700,7 @@ var core_1 = __webpack_require__(6);
 // ----------------------------------------------------------------------------------- //
 // The goal of the SharedModule is to organize declarations and other modules that will
 // be imported into other modules (for rendering). This module should NOT contain any
-// service providers (those are in the CoreModule).
+// service providers (those are provided via "providedIn: root" semantics).
 var SharedModule = /** @class */ (function () {
     function SharedModule() {
     }
@@ -6346,7 +6356,7 @@ var ReactiveFormsModule = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 233:
+/***/ 230:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6391,9 +6401,9 @@ var SynonymsComponent = /** @class */ (function () {
         this.hasResults = false;
         Promise
             .all([
-            this.wordService.getSynonyms(this.query),
-            this.wordService.getGeneralizations(this.query),
-            this.wordService.getMeansLikes(this.query)
+            this.handlePartialFailure(this.query, this.wordService.getSynonyms(this.query)),
+            this.handlePartialFailure(this.query, this.wordService.getGeneralizations(this.query)),
+            this.handlePartialFailure(this.query, this.wordService.getMeansLikes(this.query))
         ])
             .then(function (_a) {
             var synonyms = _a[0], generalizations = _a[1], meansLikes = _a[2];
@@ -6411,11 +6421,26 @@ var SynonymsComponent = /** @class */ (function () {
             console.error(error);
         });
     };
+    // ---
+    // PRIVATE METHODS.
+    // ---
+    // If any of the word-service requests fail, we want to try and return partial
+    // results (so that we can provide a degraded experience, not a total failure). To
+    // do this, we'll catch any individual error and return a "null object" response.
+    SynonymsComponent.prototype.handlePartialFailure = function (query, promise) {
+        var safePromise = promise.catch(function (error) {
+            return ({
+                query: query,
+                words: [] // Null response.
+            });
+        });
+        return (safePromise);
+    };
     SynonymsComponent = __decorate([
         core_1.Component({
             selector: "bsp-synonyms",
-            styles: [__webpack_require__(234)],
-            template: __webpack_require__(235)
+            styles: [__webpack_require__(231)],
+            template: __webpack_require__(232)
         }),
         __metadata("design:paramtypes", [word_service_1.WordService])
     ], SynonymsComponent);
@@ -6426,17 +6451,70 @@ exports.SynonymsComponent = SynonymsComponent;
 
 /***/ }),
 
-/***/ 234:
+/***/ 231:
 /***/ (function(module, exports) {
 
 module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15px ;\n}\n.header__title {\n  font-family: \"Roboto\";\n  font-size: 22px ;\n  line-height: 27px ;\n  margin-bottom: 5px ;\n}\n.header__description {\n  font-size: 16px ;\n  line-height: 21px ;\n}\n.title {\n  display: flex ;\n}\n.title__bigsexy {\n  font-weight: 300 ;\n}\n.title__synonyms {\n  font-weight: 900 ;\n}\n.body {\n  background-color: #F0F0F0;\n  padding: 22px 22px 22px 22px ;\n}\n.search {\n  display: flex ;\n  margin: 0px 0px 0px 0px ;\n}\n.search__input {\n  flex: 1 1 auto ;\n  font-size: 18px ;\n  padding: 8px 5px 7px 10px ;\n}\n.search__submit {\n  flex: 0 1 auto ;\n  font-size: 18px ;\n  margin-left: 10px ;\n  padding-left: 15px ;\n  padding-right: 15px ;\n}\n.loading,\n.no-results {\n  color: #AAAAAA;\n  font-style: italic ;\n  margin: 50px 0px 40px 0px ;\n  text-align: center ;\n}\n.results__group {\n  font-size: 16px ;\n  line-height: 21px ;\n  margin-top: 20px ;\n}\n.results__label {\n  font-weight: 600 ;\n  margin-bottom: 6px ;\n}\n.results__value {\n  display: flex ;\n  flex-wrap: wrap ;\n  line-height: 25px ;\n}\n.results__token {\n  font-weight: 300 ;\n  letter-spacing: 0.5px;\n  margin-right: 8px ;\n}\n.results__token--emphasize {\n  font-weight: 600 ;\n}\n"
 
 /***/ }),
 
-/***/ 235:
+/***/ 232:
 /***/ (function(module, exports) {
 
 module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( isLoaded && ! hasResults )\" class=\"no-results\">\n\t\tSorry, no synonyms found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( isLoaded && hasResults )\" class=\"results\">\n\n\t\t<div *ngIf=\"synonyms.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSynonyms:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of synonyms; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div *ngIf=\"generalizations.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tGeneralization:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of generalizations; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div *ngIf=\"meansLikes.length\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\tSimilar Meaning:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of meansLikes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\t\t\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
+
+/***/ }),
+
+/***/ 233:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// Import the core angular services.
+var core_1 = __webpack_require__(6);
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+var FooterComponent = /** @class */ (function () {
+    // I initialize the footer-component.
+    function FooterComponent() {
+        this.copyright = (new Date()).getFullYear();
+    }
+    FooterComponent = __decorate([
+        core_1.Component({
+            selector: "bsp-footer",
+            styles: [__webpack_require__(234)],
+            template: __webpack_require__(235)
+        }),
+        __metadata("design:paramtypes", [])
+    ], FooterComponent);
+    return FooterComponent;
+}());
+exports.FooterComponent = FooterComponent;
+
+
+/***/ }),
+
+/***/ 234:
+/***/ (function(module, exports) {
+
+module.exports = ":host {\n  display: block ;\n}\n.footer {\n  border-top: 2px solid #C8C8C8;\n  color: #666666;\n  display: flex ;\n  font-size: 16px ;\n  font-weight: 100 ;\n  justify-content: space-between;\n  padding-top: 10px ;\n}\n.footer a {\n  color: inherit ;\n}\n.footer__sources {\n  flex: 1 1 auto ;\n}\n.footer__copyright {\n  flex: 0 1 auto ;\n}\n"
+
+/***/ }),
+
+/***/ 235:
+/***/ (function(module, exports) {
+
+module.exports = "\n<footer class=\"footer\">\n\t<div class=\"footer__sources\">\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>.\n\t\tRhymes, synonyms, and syllable counts are provided by\n\t\t<a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t</div>\n\n\t<div class=\"footer__copyright\">\n\t\tCopyright {{ copyright }}\n\t</div>\n</footer>\n"
 
 /***/ }),
 
@@ -6501,17 +6579,16 @@ var WordService = /** @class */ (function () {
         this.datamuseClient = datamuseClient;
         this.storageService = storageService;
         this.syllableCountCache = Object.create(null);
-        var persistedCache = this.storageService.getItem("syllable-counts");
-        if (persistedCache) {
-            Object.assign(this.syllableCountCache, persistedCache);
-        }
+        this.loadFromStorage();
     }
     // ---
     // PUBLIC METHODS.
     // ---
+    // I get words that are broader generalizations of the given word.
     WordService.prototype.getGeneralizations = function (word) {
         return __awaiter(this, void 0, void 0, function () {
             var rawResults, results;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.datamuseClient.getWords({
@@ -6522,6 +6599,10 @@ var WordService = /** @class */ (function () {
                     case 1:
                         rawResults = _a.sent();
                         results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            // Take advantage of the syllable-count metadata that was returned with
+                            // each of the word results. We can cache this in order to short-circuit
+                            // future API calls.
+                            _this.cacheSyllableCountMetadata(item.word, item.numSyllables);
                             return ({
                                 value: item.word,
                                 syllableCount: (item.numSyllables || 0),
@@ -6537,9 +6618,11 @@ var WordService = /** @class */ (function () {
             });
         });
     };
+    // I get words that generally mean the same thing as the given word.
     WordService.prototype.getMeansLikes = function (word) {
         return __awaiter(this, void 0, void 0, function () {
             var rawResults, results;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.datamuseClient.getWords({
@@ -6550,6 +6633,10 @@ var WordService = /** @class */ (function () {
                     case 1:
                         rawResults = _a.sent();
                         results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            // Take advantage of the syllable-count metadata that was returned with
+                            // each of the word results. We can cache this in order to short-circuit
+                            // future API calls.
+                            _this.cacheSyllableCountMetadata(item.word, item.numSyllables);
                             return ({
                                 value: item.word,
                                 syllableCount: (item.numSyllables || 0),
@@ -6565,9 +6652,11 @@ var WordService = /** @class */ (function () {
             });
         });
     };
+    // I get words that rhyme with the given word.
     WordService.prototype.getRhymes = function (word) {
         return __awaiter(this, void 0, void 0, function () {
             var rawResults, results;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.datamuseClient.getWords({
@@ -6578,6 +6667,10 @@ var WordService = /** @class */ (function () {
                     case 1:
                         rawResults = _a.sent();
                         results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            // Take advantage of the syllable-count metadata that was returned with
+                            // each of the word results. We can cache this in order to short-circuit
+                            // future API calls.
+                            _this.cacheSyllableCountMetadata(item.word, item.numSyllables);
                             // The score that is passed back from Datamuse is (documented as
                             // being) not interpretable as anything concrete - it is merely a way
                             // to rank results. As such, we're going to consider the first 80% of
@@ -6605,6 +6698,7 @@ var WordService = /** @class */ (function () {
             });
         });
     };
+    // I get the syllable counts for the given collection of words.
     WordService.prototype.getSyllableCounts = function (words) {
         return __awaiter(this, void 0, void 0, function () {
             var unknownWords, promises, rawResults, results;
@@ -6644,7 +6738,7 @@ var WordService = /** @class */ (function () {
                                 _this.syllableCountCache[word] = 0;
                             }
                         });
-                        this.storageService.setItem("syllable-counts", this.syllableCountCache);
+                        this.saveToStorage();
                         _a.label = 2;
                     case 2:
                         results = words.reduce(function (reduction, word) {
@@ -6656,9 +6750,11 @@ var WordService = /** @class */ (function () {
             });
         });
     };
+    // I get words that are synonymous with the given word.
     WordService.prototype.getSynonyms = function (word) {
         return __awaiter(this, void 0, void 0, function () {
             var rawResults, results;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.datamuseClient.getWords({
@@ -6669,6 +6765,10 @@ var WordService = /** @class */ (function () {
                     case 1:
                         rawResults = _a.sent();
                         results = this.filterOutScorelessWords(rawResults).map(function (item, index, collection) {
+                            // Take advantage of the syllable-count metadata that was returned with
+                            // each of the word results. We can cache this in order to short-circuit
+                            // future API calls.
+                            _this.cacheSyllableCountMetadata(item.word, item.numSyllables);
                             return ({
                                 value: item.word,
                                 syllableCount: (item.numSyllables || 0),
@@ -6687,6 +6787,27 @@ var WordService = /** @class */ (function () {
     // ---
     // PRIVATE METHODS.
     // ---
+    // When we make calls to Datamuse, we are always asking for the number of syllables
+    // to be returned in the response metadata. This will help us build out the cache of
+    // syllable counts.
+    WordService.prototype.cacheSyllableCountMetadata = function (word, numSyllables) {
+        // If the syllable count was not available, there's nothing to cache.
+        if (!numSyllables) {
+            return;
+        }
+        // If the word is already cached, we can skip.
+        if (word in this.syllableCountCache) {
+            return;
+        }
+        // If the word contains a space, it's a turn-of-phrase. In such a case, we won't
+        // know where the distribution of syllables falls in that phrase. As such, it's
+        // not easy to cache.
+        if (word.includes(" ")) {
+            return;
+        }
+        this.syllableCountCache[word] = numSyllables;
+        this.saveToStorage();
+    };
     // I remove any Datamuse matches that don't have a score. If there is no score, then
     // the word or phrase barely matches the query. It's probably not worth returning.
     WordService.prototype.filterOutScorelessWords = function (results) {
@@ -6694,6 +6815,17 @@ var WordService = /** @class */ (function () {
             return ("score" in result);
         });
         return (filteredResults);
+    };
+    // I try to update the cache using data from the storage service.
+    WordService.prototype.loadFromStorage = function () {
+        // NOTE: Object.assign() can handle anything that's not an object. As such, we
+        // don't have to worry about the .getItem() coming back undefined - if it does,
+        // the value will just be ignored, leaving our cache untouched.
+        Object.assign(this.syllableCountCache, this.storageService.getItem("syllable-counts"));
+    };
+    // I try to save the current cache to the storage service.
+    WordService.prototype.saveToStorage = function () {
+        this.storageService.setItem("syllable-counts", this.syllableCountCache);
     };
     WordService = __decorate([
         core_1.Injectable({

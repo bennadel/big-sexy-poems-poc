@@ -11,7 +11,7 @@ import { NgModule } from "@angular/core";
 
 // The goal of the SharedModule is to organize declarations and other modules that will
 // be imported into other modules (for rendering). This module should NOT contain any
-// service providers (those are in the CoreModule).
+// service providers (those are provided via "providedIn: root" semantics).
 @NgModule({
 	imports: [
 		CommonModule,

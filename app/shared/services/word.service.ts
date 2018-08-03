@@ -47,13 +47,7 @@ export class WordService {
 
 		this.syllableCountCache = Object.create( null );
 
-		var persistedCache = this.storageService.getItem( "syllable-counts" );
-
-		if ( persistedCache ) {
-
-			Object.assign( this.syllableCountCache, persistedCache );
-
-		}
+		this.loadFromStorage();
 
 	}
 
@@ -61,6 +55,7 @@ export class WordService {
 	// PUBLIC METHODS.
 	// ---
 
+	// I get words that are broader generalizations of the given word.
 	public async getGeneralizations( word: string ) : Promise<WordResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
@@ -72,10 +67,15 @@ export class WordService {
 		var results = this.filterOutScorelessWords( rawResults ).map(
 			( item, index, collection ) => {
 
+				// Take advantage of the syllable-count metadata that was returned with
+				// each of the word results. We can cache this in order to short-circuit
+				// future API calls.
+				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
+
 				return({
 					value: item.word,
 					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: false,
+					isStrongMatch: false, // I don't yet have good logic for this.
 					score: item.score
 				});
 
@@ -90,6 +90,7 @@ export class WordService {
 	}
 
 
+	// I get words that generally mean the same thing as the given word.
 	public async getMeansLikes( word: string ) : Promise<WordResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
@@ -101,10 +102,15 @@ export class WordService {
 		var results = this.filterOutScorelessWords( rawResults ).map(
 			( item, index, collection ) => {
 
+				// Take advantage of the syllable-count metadata that was returned with
+				// each of the word results. We can cache this in order to short-circuit
+				// future API calls.
+				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
+
 				return({
 					value: item.word,
 					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: false,
+					isStrongMatch: false, // I don't yet have good logic for this.
 					score: item.score
 				});
 
@@ -119,6 +125,7 @@ export class WordService {
 	}
 
 
+	// I get words that rhyme with the given word.
 	public async getRhymes( word: string ) : Promise<WordResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
@@ -129,6 +136,11 @@ export class WordService {
 
 		var results = this.filterOutScorelessWords( rawResults ).map(
 			( item, index, collection ) => {
+
+				// Take advantage of the syllable-count metadata that was returned with
+				// each of the word results. We can cache this in order to short-circuit
+				// future API calls.
+				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
 
 				// The score that is passed back from Datamuse is (documented as
 				// being) not interpretable as anything concrete - it is merely a way
@@ -164,6 +176,7 @@ export class WordService {
 	}
 
 
+	// I get the syllable counts for the given collection of words.
 	public async getSyllableCounts( words: string[] ) : Promise<SyllableResults> {
 
 		var unknownWords = words.filter(
@@ -175,8 +188,18 @@ export class WordService {
 		);
 
 		// If there are any unknown words, let's populate the local cache before we
-		// process the contextual request.
+		// process the contextual request. This way, the entire match can be calculated
+		// using the local cache.
 		if ( unknownWords.length ) {
+
+
+			// ----------------------------------------------------------------------- //
+			// ----------------------------------------------------------------------- //
+			// TODO: We need to figure out how to handle partial failures here since we
+			// don't want to cache failures. 
+			// ----------------------------------------------------------------------- //
+			// ----------------------------------------------------------------------- //
+
 
 			var promises = unknownWords.map(
 				( word ) => {
@@ -219,7 +242,7 @@ export class WordService {
 				}
 			);
 
-			this.storageService.setItem( "syllable-counts", this.syllableCountCache );
+			this.saveToStorage();
 
 		}
 
@@ -238,6 +261,7 @@ export class WordService {
 	}
 
 
+	// I get words that are synonymous with the given word.
 	public async getSynonyms( word: string ) : Promise<WordResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
@@ -248,6 +272,11 @@ export class WordService {
 
 		var results = this.filterOutScorelessWords( rawResults ).map(
 			( item, index, collection ) => {
+
+				// Take advantage of the syllable-count metadata that was returned with
+				// each of the word results. We can cache this in order to short-circuit
+				// future API calls.
+				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
 
 				return({
 					value: item.word,
@@ -270,6 +299,40 @@ export class WordService {
 	// PRIVATE METHODS.
 	// ---
 
+	// When we make calls to Datamuse, we are always asking for the number of syllables
+	// to be returned in the response metadata. This will help us build out the cache of
+	// syllable counts.
+	private cacheSyllableCountMetadata( word: string, numSyllables?: number ) : void {
+
+		// If the syllable count was not available, there's nothing to cache.
+		if ( ! numSyllables ) {
+
+			return;
+
+		}
+
+		// If the word is already cached, we can skip.
+		if ( word in this.syllableCountCache ) {
+
+			return;
+
+		}
+
+		// If the word contains a space, it's a turn-of-phrase. In such a case, we won't
+		// know where the distribution of syllables falls in that phrase. As such, it's
+		// not easy to cache.
+		if ( word.includes( " " ) ) {
+
+			return;
+
+		}
+
+		this.syllableCountCache[ word ] = numSyllables;
+		this.saveToStorage();
+
+	}
+
+
 	// I remove any Datamuse matches that don't have a score. If there is no score, then
 	// the word or phrase barely matches the query. It's probably not worth returning.
 	private filterOutScorelessWords( results: DatamuseMatch[] ) : DatamuseMatch[] {
@@ -283,6 +346,28 @@ export class WordService {
 		);
 
 		return( filteredResults );
+
+	}
+
+
+	// I try to update the cache using data from the storage service.
+	private loadFromStorage() : void {
+
+		// NOTE: Object.assign() can handle anything that's not an object. As such, we
+		// don't have to worry about the .getItem() coming back undefined - if it does,
+		// the value will just be ignored, leaving our cache untouched.
+		Object.assign(
+			this.syllableCountCache,
+			this.storageService.getItem( "syllable-counts" )
+		);
+
+	}
+
+
+	// I try to save the current cache to the storage service.
+	private saveToStorage() : void {
+
+		this.storageService.setItem( "syllable-counts", this.syllableCountCache );
 
 	}
 

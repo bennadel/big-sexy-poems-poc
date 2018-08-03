@@ -1,5 +1,6 @@
 
 // Import the core angular services.
+import { ErrorHandler } from "@angular/core";
 import { Injectable } from "@angular/core";
 
 // ----------------------------------------------------------------------------------- //
@@ -9,8 +10,13 @@ import { Injectable } from "@angular/core";
 	providedIn: "root"
 })
 export class StorageService {
+
+	private errorHandler: ErrorHandler;
 	
-	constructor() {
+	// I initialize the storage service.
+	constructor( errorHandler: ErrorHandler ) {
+
+		this.errorHandler = errorHandler;
 
 	}
 
@@ -18,20 +24,20 @@ export class StorageService {
 	// PUBLIC METHODS.
 	// ---
 
+	// I get the given item from storage. If the storage infrastructure is not available,
+	// "undefined" is returned.
 	public getItem<T>( key: string ) : T | undefined {
 
 		try {
 
 			var serializedValue = window.localStorage.getItem( this.getStorageKey( key ) );
 			var value = <T>JSON.parse( serializedValue );
-
 			return( value );
 
 
 		} catch ( error ) {
 
-			console.warn( "Storage could not be read." );
-			console.error( error );
+			this.errorHandler.handleError( error );
 			return( undefined );
 
 		}
@@ -39,8 +45,14 @@ export class StorageService {
 	}
 
 
+	// I store the given value at the given key.
+	// --
+	// CAUTION: The value will be serialized as a JSON string.
 	public setItem( key: string, value: any ) : void {
 
+		// Since we don't need to return any value, let's do the actual write inside of
+		// an animation frame. Since localStorage is a synchronous API, this should help
+		// prevent it from blocking the user experience (... maybe).
 		window.requestAnimationFrame(
 			() => {
 
@@ -50,8 +62,7 @@ export class StorageService {
 
 				} catch ( error ) {
 
-					console.warn( "Storage could not be written." );
-					console.error( error );
+					this.errorHandler.handleError( error );
 
 				}
 
@@ -64,6 +75,7 @@ export class StorageService {
 	// PRIVATE METHODS.
 	// ---
 
+	// I return the normalized key for localStorage.
 	private getStorageKey( key: string ) : string {
 
 		return( `big-sexy-poems:${ key.toLowerCase() }` );
