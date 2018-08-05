@@ -14,3 +14,17 @@
 		</li>
 	</ul>
 </div>
+
+<div class="persistence">
+	<label for="shouldPersistPoem" class="persistence__label">
+		<input
+			type="checkbox"
+			id="shouldPersistPoem"
+			name="shouldPersistPoem"
+			[(ngModel)]="shouldPersistPoem"
+			(ngModelChange)="handlePersistenceChange()"
+			class="persistence__input"
+		/>
+		Save poem in browser ( so that it persists across page refreshes ).
+	</label>
+</div>

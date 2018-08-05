@@ -1,8 +1,10 @@
 
 // Import the core angular services.
 import { Component } from "@angular/core";
+import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
+import { StorageService } from "./shared/services/storage.service";
 import { SyllableResults } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
 
@@ -17,17 +19,27 @@ import { WordService } from "./shared/services/word.service";
 export class CanvasComponent {
 
 	public poem: string;
+	public shouldPersistPoem: boolean;
 	public syllableCounts: number[];
 
+	private errorHandler: ErrorHandler;
+	private storageService: StorageService;
 	private syllableTimer: number;
 	private wordService: WordService;
 
 	// I initialize the canvas-component.
-	constructor( wordService: WordService ) {
+	constructor(
+		errorHandler: ErrorHandler,
+		storageService: StorageService,
+		wordService: WordService
+		) {
 
+		this.errorHandler = errorHandler;
+		this.storageService = storageService;
 		this.wordService = wordService;
 
 		this.poem = "";
+		this.shouldPersistPoem = false;
 		this.syllableCounts = [];
 		this.syllableTimer = 0;
 
@@ -37,7 +49,30 @@ export class CanvasComponent {
 	// PUBLIC METHODS.
 	// ---
 
+	public handlePersistenceChange() : void {
+
+		if ( this.shouldPersistPoem ) {
+
+			this.storageService.setItem( "save-poem", true );
+			this.storageService.setItem( "poem", this.poem );
+
+		} else {
+
+			this.storageService.setItem( "save-poem", false );
+			this.storageService.setItem( "poem", "" );
+
+		}
+
+	}
+
+
 	public handlePoemChanged() : void {
+
+		if ( this.shouldPersistPoem ) {
+
+			this.storageService.setItem( "poem", this.poem );
+
+		}
 
 		clearTimeout( this.syllableTimer );
 
@@ -49,6 +84,27 @@ export class CanvasComponent {
 			},
 			500
 		);
+
+	}
+
+
+	public ngOnInit() : void {
+
+		switch ( this.storageService.getItem( "save-poem" ) ) {
+			case undefined: 
+				this.shouldPersistPoem = true;
+				this.storageService.setItem( "save-poem", true );
+			break;
+			case true:
+				this.shouldPersistPoem = true;
+				this.poem = ( this.storageService.getItem( "poem" ) || "" );
+			break;
+			case false:
+				this.shouldPersistPoem = false;
+			break;
+		}
+
+		this.updateSyllableCounts();
 
 	}
 
@@ -118,7 +174,7 @@ export class CanvasComponent {
 
 					// If the poem changed while we were fetching syllable counts, then
 					// let's return-out. There will be some parallel request that is
-					// currently processing the newer state of the poem.
+					// currently processing the newer state of the poem text.
 					if ( poemSnapshot !== this.poem ) {
 
 						return;
@@ -146,10 +202,14 @@ export class CanvasComponent {
 									( reduction, token ) => {
 
 										// If the word-service didn't recognize the given
-										// word token, then it will return ZERO for the
-										// syllable count. In such a case, we'll default
-										// to using ONE syllable so that the token takes
-										// some degree of auditory space.
+										// word token (or failed to return a response),
+										// then it will return ZERO for the syllable
+										// count. In such a case, we'll default to using
+										// ONE syllable so that the token takes some
+										// degree of auditory space.
+										// --
+										// TODO: Possibly add some sort of fall-back for
+										// calculating syllable count on the client.
 										return( reduction + ( counts[ token ] || 1 ) );
 
 									},
@@ -167,7 +227,7 @@ export class CanvasComponent {
 			.catch(
 				( error ) => {
 
-					console.error( error );
+					this.errorHandler.handleError( error );
 
 				}
 			)

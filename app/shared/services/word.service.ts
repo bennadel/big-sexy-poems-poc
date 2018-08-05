@@ -1,5 +1,6 @@
 
 // Import the core angular services.
+import { ErrorHandler } from "@angular/core";
 import { Injectable } from "@angular/core";
 
 // Import the application components and services.
@@ -36,13 +37,19 @@ interface SyllableCountCache {
 export class WordService {
 
 	private datamuseClient: DatamuseClient;
+	private errorHandler: ErrorHandler;
 	private storageService: StorageService;
 	private syllableCountCache: SyllableCountCache;
 
 	// I initialize the word service.
-	constructor( datamuseClient: DatamuseClient, storageService: StorageService ) {
+	constructor(
+		datamuseClient: DatamuseClient,
+		errorHandler: ErrorHandler,
+		storageService: StorageService
+		) {
 
 		this.datamuseClient = datamuseClient;
+		this.errorHandler = errorHandler;
 		this.storageService = storageService;
 
 		this.syllableCountCache = Object.create( null );
@@ -60,7 +67,7 @@ export class WordService {
 
 		var rawResults = await this.datamuseClient.getWords({
 			rel_gen: word,
-			md: "s",
+			md: "ps", // p: part of speech, s: syllable count.
 			max: 500
 		});
 
@@ -95,7 +102,7 @@ export class WordService {
 
 		var rawResults = await this.datamuseClient.getWords({
 			ml: word,
-			md: "s",
+			md: "ps", // p: part of speech, s: syllable count.
 			max: 500
 		});
 
@@ -130,7 +137,7 @@ export class WordService {
 
 		var rawResults = await this.datamuseClient.getWords({
 			rel_rhy: word,
-			md: "s",
+			md: "s", // s: syllable count.
 			max: 500
 		});
 
@@ -177,6 +184,10 @@ export class WordService {
 
 
 	// I get the syllable counts for the given collection of words.
+	// --
+	// NOTE: Since this method makes parallel requests, it catches individual errors and
+	// returns an object that may contain partially-degraded word results (ie, where the
+	// syllable count is zero).
 	public async getSyllableCounts( words: string[] ) : Promise<SyllableResults> {
 
 		var unknownWords = words.filter(
@@ -190,66 +201,74 @@ export class WordService {
 		// If there are any unknown words, let's populate the local cache before we
 		// process the contextual request. This way, the entire match can be calculated
 		// using the local cache.
+		// --
+		// CAUTION: We are NOT GOING TO CACHE failed requests.
 		if ( unknownWords.length ) {
 
-
-			// ----------------------------------------------------------------------- //
-			// ----------------------------------------------------------------------- //
-			// TODO: We need to figure out how to handle partial failures here since we
-			// don't want to cache failures. 
-			// ----------------------------------------------------------------------- //
-			// ----------------------------------------------------------------------- //
-
-
 			var promises = unknownWords.map(
-				( word ) => {
+				async ( word ) => {
 
-					var promise =  this.datamuseClient.getWords({
-						sp: word,
-						qe: "sp",
-						md: "s",
-						max: 1
-					});
+					// Since we're making a number of requests in parallel, we don't want
+					// to let one bad request kill the entire response. If one of the
+					// requests fails, we'll just have to re-try it next time.
+					try {
 
-					return( promise );
+						var results = await this.datamuseClient.getWords({
+							sp: word,
+							qe: "sp",
+							md: "s", // s: syllable count.
+							max: 1
+						});
 
-				}
-			);
+						// At this point, even though the result came back successfully,
+						// there's no guarantee that it's the word we were looking for.
+						// Since we're using the "SP" spelling end-point, the result may
+						// contain a "spelling suggestion", not the word that we were
+						// searching for. As such, we need to check the results before we
+						// attempt to cache them.
+						if ( results.length ) {
 
-			var rawResults = await Promise.all( promises );
-			
-			unknownWords.forEach(
-				( word, index ) => {
+							// If the word that came is NOT THE SAME WORD we requested,
+							// it means the API doesn't understand the word we are
+							// looking for. That will not change the next time. Let's
+							// cache this as zero.
+							if ( results[ 0 ].word !== word ) {
 
-					// Since we are using the SP (spelling) end-point to gather the
-					// syllable count, there's a chance that the word that comes back is
-					// NOT the word that we requested (if the Datamuse vocabulary context
-					// doesn't recognize this word). In such a case, we want to ignore
-					// the result.
-					if ( rawResults[ index ].length && ( rawResults[ index ][ 0 ].word === word ) ) {
+								this.syllableCountCache[ word ] = 0;
 
-						this.syllableCountCache[ word ] = ( rawResults[ index ][ 0 ].numSyllables || 0 );
+							// The word DOES MATCH and has a valid syllable count.
+							} else if ( results[ 0 ].numSyllables ) {
 
-					} else {
+								this.syllableCountCache[ word ] = results[ 0 ].numSyllables;
 
-						// Since the word is unrecognized, let's default to zero
-						// syllables. This will allow the calling context to figure out
-						// how it wants to best handle the "unknown" use-case.
-						this.syllableCountCache[ word ] = 0;
+							}
+
+						} 
+
+					} catch ( error ) {
+
+						this.errorHandler.handleError( error );
 
 					}
 
 				}
 			);
 
+			await Promise.all( promises );
+
+			// Once the parallel requests come back, we should (may) have changes to the
+			// syllable count cache that we want to persist for next time.
 			this.saveToStorage();
 
-		}
+		} // END: Unknown words.
 
 		var results = words.reduce(
 			( reduction, word ) => {
 
-				reduction[ word ] = this.syllableCountCache[ word ];
+				// CAUTION: Even at this point, the cache may not have the word we are
+				// looking at (due to a network or API failure). As such, we're going to
+				// fall-back to "0".
+				reduction[ word ] = ( this.syllableCountCache[ word ] || 0 );
 				return( reduction );
 
 			},
@@ -266,7 +285,7 @@ export class WordService {
 
 		var rawResults = await this.datamuseClient.getWords({
 			rel_syn: word,
-			md: "s",
+			md: "ps", // p: part of speech, s: syllable count.
 			max: 500
 		});
 

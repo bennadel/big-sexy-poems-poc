@@ -1,6 +1,7 @@
 
 // Import the core angular services.
 import { Component } from "@angular/core";
+import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
 import { WordService } from "./shared/services/word.service";
@@ -34,12 +35,17 @@ export class RhymesComponent {
 	public query: string;
 	public results: RhymeResults | null;
 
-	private wordSerivce: WordService;
+	private errorHandler: ErrorHandler;
+	private wordService: WordService;
 
 	// I initialize the rhymes component.
-	constructor( wordService: WordService ) {
+	constructor(
+		errorHandler: ErrorHandler,
+		wordService: WordService
+		) {
 
-		this.wordSerivce = wordService;
+		this.errorHandler = errorHandler;
+		this.wordService = wordService;
 
 		this.isLoading = false;
 		this.query = "";
@@ -51,6 +57,7 @@ export class RhymesComponent {
 	// PUBLIC METHODS.
 	// ---
 
+	// I handle the submission of the search form.
 	public handleSubmit() : void {
 
 		if ( ! this.query ) {
@@ -60,14 +67,17 @@ export class RhymesComponent {
 		}
 
 		this.isLoading = true;
+		this.results = null;
 
-		this.wordSerivce
+		this.wordService
 			.getRhymes( this.query )
 			.then(
 				( response ) => {
 
 					this.isLoading = false;
 
+					// Prepare the data structure that we're going to use to display the
+					// results (broken down by syllable count).
 					this.results = {
 						count: response.words.length,
 						groups: [
@@ -80,8 +90,27 @@ export class RhymesComponent {
 						]
 					};
 
+					// The words are returned in score-order. However, we want to display
+					// them in alphabetical order. As such, let's sort them before we
+					// divide them into groups so that we know the groups are implicitly
+					// sorted as they are created.
+					response.words.sort(
+						( a, b ) => {
+
+							var wordA = a.value.toLowerCase();
+							var wordB = b.value.toLowerCase();
+
+							return( ( wordA < wordB ) ? -1 : 1 );
+
+						}
+					);
+
+					// Move each word into its appropriate results group.
 					for ( var word of response.words ) {
 
+						// Our results data structure only accounts for a set number of
+						// syllable groups. If this word falls outside of that set, just
+						// ignore it.
 						if ( ( word.syllableCount > 6 ) || ( word.syllableCount < 1 ) ) {
 
 							continue;
@@ -95,35 +124,14 @@ export class RhymesComponent {
 
 					}
 
-					this.results.groups = this.results.groups
-						.filter(
-							( group ) => {
+					// Remove any results group that had no words added to it.
+					this.results.groups = this.results.groups.filter(
+						( group ) => {
 
-								return( group.rhymes.length );
+							return( group.rhymes.length );
 
-							}
-						)
-						.map(
-							( group ) => {
-
-								return({
-									syllableCount: group.syllableCount,
-									rhymes: group.rhymes.sort(
-										( a, b ) => {
-
-											var wordA = a.word.toLowerCase();
-											var wordB = b.word.toLowerCase();
-
-											return( ( wordA < wordB ) ? -1 : 1 );
-
-										}
-									)
-								});
-
-							}
-						)
-					;
-
+						}
+					);
 
 				}
 			)
@@ -131,17 +139,12 @@ export class RhymesComponent {
 				( error ) => {
 
 					this.isLoading = false;
-
-					console.error( error );
+					this.errorHandler.handleError( error );
 
 				}
 			)
 		;
 
 	}
-
-	// ---
-	// PRIVATE METHODS.
-	// ---
 
 }

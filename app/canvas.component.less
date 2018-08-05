@@ -13,8 +13,7 @@
 	&__syllables {
 		border: 0px ;
 		font-size: 20px ;
-
-		line-height: 30px ;
+		line-height: 29px ;
 		padding: 20px 22px 20px 22px ;
 	}
 
@@ -22,7 +21,12 @@
 		background-color: #FAFAFA ;
 		flex: 1 1 100% ;
 		font-family: inherit ;
-		font-weight: 300 ;
+		font-weight: 400 ;
+
+		&:active,
+		&:focus {
+			outline: 0 ;
+		}
 	}
 
 	&__syllables {
@@ -43,5 +47,23 @@
 		&--none {
 			visibility: hidden ;
 		}
+	}
+}
+
+.persistence {
+	margin-top: 4px ;
+
+	&__label {
+		color: #888888 ;
+		cursor: pointer ;
+		font-size: 13px ;
+
+		&:hover {
+			color: #000000 ;
+		}
+	}
+
+	&__input {
+		font-size: 13px ;
 	}
 }

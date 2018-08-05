@@ -1,6 +1,7 @@
 
 // Import the core angular services.
 import { Component } from "@angular/core";
+import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
 import { Word } from "./shared/services/word.service";
@@ -25,11 +26,16 @@ export class SynonymsComponent {
 	public query: string;
 	public synonyms: Word[] | null;
 
+	private errorHandler: ErrorHandler;
 	private wordService: WordService;
 
 	// I initialize the synonyms component.
-	constructor( wordService: WordService ) {
+	constructor(
+		errorHandler: ErrorHandler,
+		wordService: WordService
+		) {
 		
+		this.errorHandler = errorHandler;
 		this.wordService = wordService;
 
 		this.generalizations = null;
@@ -46,6 +52,7 @@ export class SynonymsComponent {
 	// PUBLIC METHODS.
 	// ---
 
+	// I handle the submission of the search form.
 	public handleSubmit() : void {
 
 		if ( ! this.query ) {
@@ -72,7 +79,6 @@ export class SynonymsComponent {
 					this.synonyms = synonyms.words;
 					this.generalizations = generalizations.words;
 					this.meansLikes = meansLikes.words;
-
 					this.hasResults = !! ( this.synonyms.length + this.generalizations.length + this.meansLikes.length );
 
 				}
@@ -84,7 +90,7 @@ export class SynonymsComponent {
 					this.isLoading = false;
 					this.hasResults = false;
 
-					console.error( error );
+					this.errorHandler.handleError( error );
 
 				}
 			)
