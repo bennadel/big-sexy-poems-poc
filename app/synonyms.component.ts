@@ -4,12 +4,27 @@ import { Component } from "@angular/core";
 import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
+import { MeansLikeResults } from "./shared/services/word.service";
 import { Word } from "./shared/services/word.service";
-import { WordResults } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
+
+interface SynonymResults {
+	count: number;
+	groups: SynonymGroup[];
+}
+
+interface SynonymGroup {
+	partOfSpeech: string;
+	synonyms: Synonym[];
+}
+
+interface Synonym {
+	word: string;
+	isStrongMatch: boolean;
+}
 
 @Component({
 	selector: "bsp-synonyms",
@@ -18,13 +33,9 @@ import { WordService } from "./shared/services/word.service";
 })
 export class SynonymsComponent {
 
-	public generalizations: Word[] | null;
-	public hasResults: boolean;
-	public isLoaded: boolean;
 	public isLoading: boolean;
-	public meansLikes: Word[] | null;
 	public query: string;
-	public synonyms: Word[] | null;
+	public results: SynonymResults | null;
 
 	private errorHandler: ErrorHandler;
 	private wordService: WordService;
@@ -38,13 +49,9 @@ export class SynonymsComponent {
 		this.errorHandler = errorHandler;
 		this.wordService = wordService;
 
-		this.generalizations = null;
-		this.hasResults = false;
-		this.isLoaded = false;
 		this.isLoading = false;
-		this.meansLikes = null;
 		this.query = "";
-		this.synonyms = null;
+		this.results = null;
 
 	}
 
@@ -61,34 +68,104 @@ export class SynonymsComponent {
 
 		}
 
-		this.isLoaded = false;
 		this.isLoading = true;
-		this.hasResults = false;
+		this.results = null;
 
-		Promise
-			.all([
-				this.handlePartialFailure( this.query, this.wordService.getSynonyms( this.query ) ),
-				this.handlePartialFailure( this.query, this.wordService.getGeneralizations( this.query ) ),
-				this.handlePartialFailure( this.query, this.wordService.getMeansLikes( this.query ) )
-			])
+		this.wordService
+			.getMeansLikes( this.query )
 			.then(
-				( [ synonyms, generalizations, meansLikes ] ) => {
+				( response ) => {
 
-					this.isLoaded = true;
 					this.isLoading = false;
-					this.synonyms = synonyms.words;
-					this.generalizations = generalizations.words;
-					this.meansLikes = meansLikes.words;
-					this.hasResults = !! ( this.synonyms.length + this.generalizations.length + this.meansLikes.length );
+
+					this.results = {
+						count: response.words.length,
+						groups: [
+							{ partOfSpeech: "Adjectives", synonyms: [] },
+							{ partOfSpeech: "Adverbs", synonyms: [] },
+							{ partOfSpeech: "Nouns", synonyms: [] },
+							{ partOfSpeech: "Verbs", synonyms: [] }
+						]
+					};
+
+					for ( var word of response.words ) {
+
+						switch ( word.typeOfSpeech ) {
+							case "adjective":
+								this.results.groups[ 0 ].synonyms.push({
+									word: word.value,
+									isStrongMatch: word.isStrongMatch
+								});
+							break;
+							case "adverb":
+								this.results.groups[ 1 ].synonyms.push({
+									word: word.value,
+									isStrongMatch: word.isStrongMatch
+								});
+							break;
+							case "noun":
+								this.results.groups[ 2 ].synonyms.push({
+									word: word.value,
+									isStrongMatch: word.isStrongMatch
+								});
+							break;
+							case "verb":
+								this.results.groups[ 3 ].synonyms.push({
+									word: word.value,
+									isStrongMatch: word.isStrongMatch
+								});
+							break;
+						}
+
+					}
+
+					this.results.groups.sort(
+						( a: SynonymGroup, b: SynonymGroup ) => {
+
+							var aStrongMatches = a.synonyms.filter(
+								( item ) => {
+									return( item.isStrongMatch );
+								}
+							);
+
+							var bStrongMatches = b.synonyms.filter(
+								( item ) => {
+									return( item.isStrongMatch );
+								}
+							);
+
+							if ( aStrongMatches.length > bStrongMatches.length ) {
+
+								return( -1 );
+
+							} else if ( bStrongMatches.length > aStrongMatches.length ) {
+
+								return( 1 );
+
+							} else if ( a.synonyms.length > b.synonyms.length ) {
+
+								return( -1 );
+
+							} else if ( b.synonyms.length > a.synonyms.length ) {
+
+								return( 1 );
+
+							} else {
+
+								return( 0 );
+
+							}
+
+						}
+					);
 
 				}
 			)
 			.catch(
 				( error ) => {
 
-					this.isLoaded = true;
 					this.isLoading = false;
-					this.hasResults = false;
+					this.results = null;
 
 					this.errorHandler.handleError( error );
 
@@ -101,28 +178,5 @@ export class SynonymsComponent {
 	// ---
 	// PRIVATE METHODS.
 	// ---
-
-	// If any of the word-service requests fail, we want to try and return partial
-	// results (so that we can provide a degraded experience, not a total failure). To
-	// do this, we'll catch any individual error and return a "null object" response.
-	private handlePartialFailure(
-		query: string,
-		promise: Promise<WordResults>
-		) : Promise<WordResults> {
-
-		var safePromise = promise.catch(
-			( error ) : WordResults => {
-
-				return({
-					query: query,
-					words: [] // Null response.
-				});
-
-			}
-		);
-
-		return( safePromise );
-
-	}
 
 }

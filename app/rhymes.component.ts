@@ -4,6 +4,7 @@ import { Component } from "@angular/core";
 import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
+import { Word } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
 
 // ----------------------------------------------------------------------------------- //
@@ -95,7 +96,7 @@ export class RhymesComponent {
 					// divide them into groups so that we know the groups are implicitly
 					// sorted as they are created.
 					response.words.sort(
-						( a, b ) => {
+						( a: Word, b: Word ) => {
 
 							var wordA = a.value.toLowerCase();
 							var wordB = b.value.toLowerCase();

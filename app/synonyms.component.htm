@@ -26,59 +26,29 @@
 	<!-- END: Loading Indicator. -->
 
 	<!-- BEGIN: No Results. -->
-	<div *ngIf="( isLoaded && ! hasResults )" class="no-results">
+	<div *ngIf="( results && ! results.count )" class="no-results">
 		Sorry, no synonyms found.
 	</div>
 	<!-- END: No Results. -->
 
 	<!-- BEGIN: Results. -->
-	<div *ngIf="( isLoaded && hasResults )" class="results">
+	<div *ngIf="( results && results.count )" class="results">
 
-		<div *ngIf="synonyms.length" class="results__group">
+		<div *ngFor="let group of results.groups" class="results__group">
 			<div class="results__label">
-				Synonyms:
+				{{ group.partOfSpeech }}:
 			</div>
 
 			<div class="results__value">
 				<span
-					*ngFor="let word of synonyms; last as isLast;"
+					*ngFor="let synonym of group.synonyms; last as isLast;"
 					class="results__token"
-					[class.results__token--emphasize]="word.isStrongMatch">
-					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
+					[class.results__token--emphasize]="synonym.isStrongMatch">
+					{{ synonym.word }}<ng-template [ngIf]="! isLast">,</ng-template>
 				</span>
 			</div>
 		</div>
 
-		<div *ngIf="generalizations.length" class="results__group">
-			<div class="results__label">
-				Generalization:
-			</div>
-
-			<div class="results__value">
-				<span
-					*ngFor="let word of generalizations; last as isLast;"
-					class="results__token"
-					[class.results__token--emphasize]="word.isStrongMatch">
-					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
-				</span>
-			</div>
-		</div>
-
-		<div *ngIf="meansLikes.length" class="results__group">
-			<div class="results__label">
-				Similar Meaning:
-			</div>
-
-			<div class="results__value">
-				<span
-					*ngFor="let word of meansLikes; last as isLast;"
-					class="results__token"
-					[class.results__token--emphasize]="word.isStrongMatch">
-					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
-				</span>
-			</div>
-		</div>
-		
 	</div>
 	<!-- END: Results. -->
 

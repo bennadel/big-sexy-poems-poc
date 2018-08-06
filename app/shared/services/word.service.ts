@@ -11,20 +11,28 @@ import { StorageService } from "./storage.service";
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 
-export interface Word {
-	value: string;
-	syllableCount: number;
-	isStrongMatch: boolean;
-	score: number;
+export type TypeOfSpeech = "noun" | "verb" | "adjective" | "adverb" | "unknown";
+
+export interface MeansLikeResults {
+	query: string;
+	typeOfSpeech: TypeOfSpeech;
+	words: Word[];
 }
 
-export interface WordResults {
+export interface RhymeResults {
 	query: string;
 	words: Word[];
 }
 
 export interface SyllableResults {
 	[ key: string ]: number;
+}
+
+export interface Word {
+	value: string;
+	syllableCount: number;
+	typeOfSpeech: TypeOfSpeech;
+	isStrongMatch: boolean;
 }
 
 interface SyllableCountCache {
@@ -62,51 +70,36 @@ export class WordService {
 	// PUBLIC METHODS.
 	// ---
 
-	// I get words that are broader generalizations of the given word.
-	public async getGeneralizations( word: string ) : Promise<WordResults> {
-
-		var rawResults = await this.datamuseClient.getWords({
-			rel_gen: word,
-			md: "ps", // p: part of speech, s: syllable count.
-			max: 500
-		});
-
-		var results = this.filterOutScorelessWords( rawResults ).map(
-			( item, index, collection ) => {
-
-				// Take advantage of the syllable-count metadata that was returned with
-				// each of the word results. We can cache this in order to short-circuit
-				// future API calls.
-				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
-
-				return({
-					value: item.word,
-					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: false, // I don't yet have good logic for this.
-					score: item.score
-				});
-
-			}
-		);
-
-		return({
-			query: word,
-			words: results
-		});
-
-	}
-
-
 	// I get words that generally mean the same thing as the given word.
-	public async getMeansLikes( word: string ) : Promise<WordResults> {
+	public async getMeansLikes( word: string ) : Promise<MeansLikeResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
 			ml: word,
+			qe: "ml",
 			md: "ps", // p: part of speech, s: syllable count.
 			max: 500
 		});
 
-		var results = this.filterOutScorelessWords( rawResults ).map(
+		rawResults = this.filterOutScoreless( rawResults );
+		rawResults = this.filterOutTagless( rawResults );
+		rawResults = this.filterOutAntonyms( rawResults );
+		rawResults = this.filterOutProperNouns( rawResults );
+
+		var queryTypeOfSpeech: TypeOfSpeech = "unknown";
+
+		// Since we are using "qe" (query echo), the first result should be the word that
+		// we are searching for, unless Datamuse didn't recognize it.
+		if ( rawResults.length && ( rawResults[ 0 ].word === word ) ) {
+
+			// Strip off the first result.
+			var echoResult = rawResults[ 0 ];
+			rawResults = rawResults.slice( 1 );
+
+			queryTypeOfSpeech = this.getTypeOfSpeech( echoResult.tags );
+
+		}
+
+		var results = rawResults.map(
 			( item, index, collection ) => {
 
 				// Take advantage of the syllable-count metadata that was returned with
@@ -114,11 +107,14 @@ export class WordService {
 				// future API calls.
 				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
 
+				var typeOfSpeech = this.getTypeOfSpeech( item.tags );
+				var isStrongMatch = this.isSynonym( item.tags );
+
 				return({
 					value: item.word,
 					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: false, // I don't yet have good logic for this.
-					score: item.score
+					typeOfSpeech: typeOfSpeech,
+					isStrongMatch: isStrongMatch
 				});
 
 			}
@@ -126,6 +122,7 @@ export class WordService {
 
 		return({
 			query: word,
+			typeOfSpeech: queryTypeOfSpeech,
 			words: results
 		});
 
@@ -133,7 +130,7 @@ export class WordService {
 
 
 	// I get words that rhyme with the given word.
-	public async getRhymes( word: string ) : Promise<WordResults> {
+	public async getRhymes( word: string ) : Promise<RhymeResults> {
 
 		var rawResults = await this.datamuseClient.getWords({
 			rel_rhy: word,
@@ -141,7 +138,7 @@ export class WordService {
 			max: 500
 		});
 
-		var results = this.filterOutScorelessWords( rawResults ).map(
+		var results = this.filterOutScoreless( rawResults ).map(
 			( item, index, collection ) => {
 
 				// Take advantage of the syllable-count metadata that was returned with
@@ -168,8 +165,8 @@ export class WordService {
 				return({
 					value: item.word,
 					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: isStrongMatch,
-					score: item.score
+					typeOfSpeech: <TypeOfSpeech>"unknown",
+					isStrongMatch: isStrongMatch
 				});
 
 			}
@@ -279,44 +276,24 @@ export class WordService {
 
 	}
 
+	// ---
+	// PRIVATE METHODS.
+	// ---
 
-	// I get words that are synonymous with the given word.
-	public async getSynonyms( word: string ) : Promise<WordResults> {
+	private arrayContains( collection: any[], value: any ) : boolean {
 
-		var rawResults = await this.datamuseClient.getWords({
-			rel_syn: word,
-			md: "ps", // p: part of speech, s: syllable count.
-			max: 500
-		});
+		var foundItem = collection.find(
+			( item ) => {
 
-		var results = this.filterOutScorelessWords( rawResults ).map(
-			( item, index, collection ) => {
-
-				// Take advantage of the syllable-count metadata that was returned with
-				// each of the word results. We can cache this in order to short-circuit
-				// future API calls.
-				this.cacheSyllableCountMetadata( item.word, item.numSyllables );
-
-				return({
-					value: item.word,
-					syllableCount: ( item.numSyllables || 0 ),
-					isStrongMatch: false,
-					score: item.score
-				});
+				return( item === value );
 
 			}
 		);
 
-		return({
-			query: word,
-			words: results
-		});
+		return( !! foundItem );
 
 	}
 
-	// ---
-	// PRIVATE METHODS.
-	// ---
 
 	// When we make calls to Datamuse, we are always asking for the number of syllables
 	// to be returned in the response metadata. This will help us build out the cache of
@@ -352,9 +329,42 @@ export class WordService {
 	}
 
 
+	private filterOutAntonyms( results: DatamuseMatch[] ) : DatamuseMatch[] {
+
+		var filteredResults = results.filter(
+			( result ) => {
+
+				return( ! this.arrayContains( result.tags, "ant" ) );
+
+			}
+		);
+
+		return( filteredResults );
+
+	}
+
+
+	private filterOutProperNouns( results: DatamuseMatch[] ) : DatamuseMatch[] {
+
+		var filteredResults = results.filter(
+			( result ) => {
+
+				var isNoun = this.arrayContains( result.tags, "n" );
+				var isProper = this.arrayContains( result.tags, "prop" );
+
+				return( ! ( isNoun && isProper ) );
+
+			}
+		);
+
+		return( filteredResults );
+
+	}
+
+
 	// I remove any Datamuse matches that don't have a score. If there is no score, then
 	// the word or phrase barely matches the query. It's probably not worth returning.
-	private filterOutScorelessWords( results: DatamuseMatch[] ) : DatamuseMatch[] {
+	private filterOutScoreless( results: DatamuseMatch[] ) : DatamuseMatch[] {
 
 		var filteredResults = results.filter(
 			( result ) => {
@@ -365,6 +375,73 @@ export class WordService {
 		);
 
 		return( filteredResults );
+
+	}
+
+
+	private filterOutTagless( results: DatamuseMatch[] ) : DatamuseMatch[] {
+
+		var filteredResults = results.filter(
+			( result ) => {
+
+				return( "tags" in result );
+
+			}
+		);
+
+		return( filteredResults );
+
+	}
+
+
+	private getTypeOfSpeech( tags: string[] ) : TypeOfSpeech {
+
+		var tag = tags.find(
+			( tag ) => {
+
+				return(
+					( tag === "n" ) ||
+					( tag === "v" ) ||
+					( tag === "adj" ) ||
+					( tag === "adv" ) ||
+					( tag === "u" )
+				);
+
+			}
+		);
+
+		switch ( tag ) {
+			case "n":
+				return( "noun" );
+			break;
+			case "v":
+				return( "verb" );
+			break;
+			case "adj":
+				return( "adjective" );
+			break;
+			case "adv":
+				return( "adverb" );
+			break;
+			default:
+				return( "unknown" );
+			break;
+		}
+
+	}
+
+
+	private isSynonym( tags: string[] ) : boolean {
+
+		var value = tags.find(
+			( tag ) => {
+
+				return( tag === "syn" );
+
+			}
+		);
+
+		return( !! value );
 
 	}
 

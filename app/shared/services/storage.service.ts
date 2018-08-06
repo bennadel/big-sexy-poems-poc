@@ -12,11 +12,14 @@ import { Injectable } from "@angular/core";
 export class StorageService {
 
 	private errorHandler: ErrorHandler;
+	private timer: number | null;
 	
 	// I initialize the storage service.
 	constructor( errorHandler: ErrorHandler ) {
 
 		this.errorHandler = errorHandler;
+
+		this.timer = null;
 
 	}
 
@@ -50,10 +53,13 @@ export class StorageService {
 	// CAUTION: The value will be serialized as a JSON string.
 	public setItem( key: string, value: any ) : void {
 
+		window.clearTimeout( this.timer );
+
 		// Since we don't need to return any value, let's do the actual write inside of
-		// an animation frame. Since localStorage is a synchronous API, this should help
-		// prevent it from blocking the user experience (... maybe).
-		window.requestAnimationFrame(
+		// a timeout. Since localStorage is a synchronous API, this should help prevent
+		// it from blocking the user experience (from the user's perceptive - the actual
+		// write-operation will still be blocking).
+		this.timer = window.setTimeout(
 			() => {
 
 				try {
@@ -66,7 +72,8 @@ export class StorageService {
 
 				}
 
-			}
+			},
+			5000 // 5-seconds.
 		);
 
 	}
