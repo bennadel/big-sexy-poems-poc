@@ -161,6 +161,7 @@ var CanvasComponent = /** @class */ (function () {
     // ---
     // PUBLIC METHODS.
     // ---
+    // I handle changes to the "persist poem" toggle.
     CanvasComponent.prototype.handlePersistenceChange = function () {
         if (this.shouldPersistPoem) {
             this.storageService.setItem("save-poem", true);
@@ -171,22 +172,31 @@ var CanvasComponent = /** @class */ (function () {
             this.storageService.setItem("poem", "");
         }
     };
+    // I handle changes to the poem text.
     CanvasComponent.prototype.handlePoemChanged = function () {
-        var _this = this;
         if (this.shouldPersistPoem) {
             this.storageService.setItem("poem", this.poem);
         }
-        clearTimeout(this.syllableTimer);
-        this.syllableTimer = setTimeout(function () {
-            _this.updateSyllableCounts();
-        }, 500);
+        // As the user formulates the poem, we want to be checking for new words and
+        // syllable counts; however, in order to reduce the number of "partial words"
+        // that we match against, let's push the syllable count update to slightly in
+        // the future. This way, the counts are only re-established when the user typing
+        // comes to a brief rest.
+        this.scheduleSyllableCountUpdate();
     };
+    // I get called once after the inputs have been bound for the first time.
     CanvasComponent.prototype.ngOnInit = function () {
         switch (this.storageService.getItem("save-poem")) {
+            // If the "save poem" setting is undefined, it means that it has never been
+            // set before. In that case, we're going to default it to being ON. The
+            // chances are good that the user will want their data to be stored across
+            // refreshes and defaulting it to ON will result in fewer mistakes.
             case undefined:
                 this.shouldPersistPoem = true;
                 this.storageService.setItem("save-poem", true);
                 break;
+            // If the "save poem" setting is TRUE, then let's try to pull any previously
+            // saved poem back into the application.
             case true:
                 this.shouldPersistPoem = true;
                 this.poem = (this.storageService.getItem("poem") || "");
@@ -195,39 +205,68 @@ var CanvasComponent = /** @class */ (function () {
                 this.shouldPersistPoem = false;
                 break;
         }
+        // At this point, we may have pulled a saved poem back into the application. As
+        // such, we may need to update the syllable count.
         this.updateSyllableCounts();
     };
     // ---
     // PRIVATE METHODS.
     // ---
+    // I extract the lines from the given NORMALIZED text.
     CanvasComponent.prototype.extractLines = function (value) {
         return (value.trim().split(/\r\n?|\n/g));
     };
+    // I return a collection of unique words from the given NORMALIZED text.
     CanvasComponent.prototype.extractUniqueWords = function (value) {
-        var words = this.extractWords(value)
-            .reduce(function (reduction, word) {
-            reduction[word] = true;
-            return (reduction);
-        }, Object.create(null) // Initial value.
-        );
-        return (Object.keys(words));
+        var uniqueWords = Object.create(null);
+        // Write each word to the unique collection. This will cause word collisions to
+        // overwrite each other, leaving us with a collection whose keys represent the
+        // sum total of unique words in the given value.
+        for (var _i = 0, _a = this.extractWords(value); _i < _a.length; _i++) {
+            var word = _a[_i];
+            uniqueWords[word] = true;
+        }
+        return (Object.keys(uniqueWords));
     };
+    // I extract the word tokens from the given NORMALIZED text.
     CanvasComponent.prototype.extractWords = function (value) {
         return (value.trim().match(/\S+/g) || []);
     };
+    // I normalize the given poem text for use in the syllable count. This removes all of
+    // the content that has no bearing on the syllable count; and, creates a value that
+    // will work well with the WordService.
     CanvasComponent.prototype.normalizePoemText = function (poem) {
         var normalizedPoem = poem
             .toLowerCase()
-            // Replace any string of word-delimiters with a space.
-            .replace(/[ _:\u2014\u2013-]+/g, " ")
+            // Strip out any quotes.
+            .replace(/['"]+/g, "")
             // Strip out any constructs that don't directly influence the way in which
             // the poem can be read out-loud.
-            .replace(/[^a-z0-9\s]/gi, "");
+            // --
+            // NOTE: Creating extra white-space won't be a problem because we will only
+            // care about the words that are left-over.
+            .replace(/[^a-z0-9\s]/gi, " ")
+            .trim();
         return (normalizedPoem);
     };
+    // I schedule an update of the syllable count for some time in the future. This
+    // implicitly cancels any existing scheduled update.
+    CanvasComponent.prototype.scheduleSyllableCountUpdate = function () {
+        var _this = this;
+        clearTimeout(this.syllableTimer);
+        this.syllableTimer = setTimeout(function () {
+            _this.updateSyllableCounts();
+        }, 500 // Half-second.
+        );
+    };
+    // I gather the syllable counts for each line in the current poem text.
     CanvasComponent.prototype.updateSyllableCounts = function () {
         var _this = this;
         var poemSnapshot = this.poem;
+        // Since the user may enter any kind of text into the poem input, there's a good
+        // chance that it contains data that has no audible component (ex, quotes and
+        // other punctuation). As such, let's strip out anything that won't influence the
+        // number of syllables.
         var text = this.normalizePoemText(poemSnapshot);
         var words = this.extractUniqueWords(text);
         this.wordService
@@ -240,13 +279,14 @@ var CanvasComponent = /** @class */ (function () {
                 return;
             }
             // At this point, we should be guaranteed that there is a syllable
-            // count for every word token in the normalized poem. As such, we
-            // should be able to break the poem into lines and then count the
-            // syllables in each line.
-            _this.syllableCounts = _this
-                .extractLines(text)
-                .map(function (line) {
+            // count for every word token in the normalized poem (though some of
+            // them may be ZERO if the WordService didn't understand what words
+            // they were). As such, we should be able to break the poem into
+            // lines and then count the syllables in each line. Let's map each
+            // line to a syllable count.
+            _this.syllableCounts = _this.extractLines(text).map(function (line) {
                 var tokens = _this.extractWords(line);
+                // If there are no words in this line, just return zero.
                 if (!tokens) {
                     return (0);
                 }
@@ -480,7 +520,7 @@ module.exports = ":host {\n  display: block ;\n}\n.footer {\n  border-top: 2px s
 /***/ 225:
 /***/ (function(module, exports) {
 
-module.exports = "\n<footer class=\"footer\">\n\t<div class=\"footer__bigsexy bigsexy\">\n\t\t<strong class=\"bigsexy__label\">BigSexy:</strong>\n\t\t<span class=\"bigsexy__meta\">( /biɡ ˈseksē/ ) noun.</span>\n\t\t<span class=\"bigsexy__dash\">—</span>\n\t\t<span class=\"bigsexy__definition\">Your muse. Your inspiration. The part of your soul that feels deeply, lives with abandon, and loves without limits.</span> \n\t</div>\n\n\t<span class=\"footer__sources\">\n\t\tRhymes, synonyms, and syllable counts are provided by\n\t\t<a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>\n\t\t&copy;\n\t\t{{ copyright }}\n\t</span>\n</footer>\n\n\n"
+module.exports = "\n<footer class=\"footer\">\n\t<div class=\"footer__bigsexy bigsexy\">\n\t\t<strong class=\"bigsexy__label\">BigSexy :</strong>\n\t\t<span class=\"bigsexy__meta\">( /biɡ ˈseksē/ ) noun.</span>\n\t\t<span class=\"bigsexy__dash\">—</span>\n\t\t<span class=\"bigsexy__definition\">Your muse. Your inspiration. The part of your soul that feels deeply, lives with abandon, and loves without limits.</span> \n\t</div>\n\n\t<span class=\"footer__sources\">\n\t\tRhymes, synonyms, and syllable counts are provided by\n\t\t<a href=\"https://www.datamuse.com/\" target=\"_blank\">Datamuse</a>,\n\t\twhich is awesome!\n\t\tMaintained by <a href=\"https://www.bennadel.com\" target=\"_blank\">Ben Nadel</a>\n\t\t&copy;\n\t\t{{ copyright }}\n\t</span>\n</footer>\n\n\n"
 
 /***/ }),
 
@@ -636,24 +676,23 @@ var RhymesComponent = /** @class */ (function () {
             _this.results = {
                 count: response.words.length,
                 groups: [
-                    { syllableCount: 1, rhymes: [] },
-                    { syllableCount: 2, rhymes: [] },
-                    { syllableCount: 3, rhymes: [] },
-                    { syllableCount: 4, rhymes: [] },
-                    { syllableCount: 5, rhymes: [] },
-                    { syllableCount: 6, rhymes: [] }
+                    { label: "1 Syllable", words: [] },
+                    { label: "2 Syllables", words: [] },
+                    { label: "3 Syllables", words: [] },
+                    { label: "4 Syllables", words: [] },
+                    { label: "5 Syllables", words: [] },
+                    { label: "6 Syllables", words: [] }
                 ]
             };
-            // The words are returned in score-order. However, we want to display
-            // them in alphabetical order. As such, let's sort them before we
-            // divide them into groups so that we know the groups are implicitly
-            // sorted as they are created.
+            // The words are returned in rank-order. However, for easier
+            // consumption, we want to display them in alphabetical order. As
+            // such, let's sort them before we divide them into groups so that
+            // we know the groups are implicitly sorted as they are created.
             response.words.sort(function (a, b) {
-                var wordA = a.value.toLowerCase();
-                var wordB = b.value.toLowerCase();
-                return ((wordA < wordB) ? -1 : 1);
+                return ((a.value < b.value) ? -1 : 1);
             });
-            // Move each word into its appropriate results group.
+            // Now that the word response is sorted, let's move each word into
+            // its appropriate results group.
             for (var _i = 0, _a = response.words; _i < _a.length; _i++) {
                 var word = _a[_i];
                 // Our results data structure only accounts for a set number of
@@ -662,18 +701,19 @@ var RhymesComponent = /** @class */ (function () {
                 if ((word.syllableCount > 6) || (word.syllableCount < 1)) {
                     continue;
                 }
-                _this.results.groups[word.syllableCount - 1].rhymes.push({
-                    word: word.value,
+                _this.results.groups[word.syllableCount - 1].words.push({
+                    value: word.value,
                     isStrongMatch: word.isStrongMatch
                 });
             }
-            // Remove any results group that had no words added to it.
+            // And finally, remove any results group that ended up with no words.
             _this.results.groups = _this.results.groups.filter(function (group) {
-                return (group.rhymes.length);
+                return (!!group.words.length);
             });
         })
             .catch(function (error) {
             _this.isLoading = false;
+            _this.results = null;
             _this.errorHandler.handleError(error);
         });
     };
@@ -703,7 +743,7 @@ module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15
 /***/ 231:
 /***/ (function(module, exports) {
 
-module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__rhymes\">Rhymes</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that rhyme well with each other.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( results && results.count )\" class=\"results\">\n\t\t\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.syllableCount }}\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount === 1 )\">Syllable:</ng-template>\n\t\t\t\t<ng-template [ngIf]=\"( group.syllableCount > 1 )\">Syllables:</ng-template>\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let rhyme of group.rhymes; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"rhyme.isStrongMatch\">\n\t\t\t\t\t{{ rhyme.word }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
+module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__rhymes\">Rhymes</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that rhyme well with each other.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( ! isLoading && results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no rhymes found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( ! isLoading && results && results.count )\" class=\"results\">\n\t\t\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.label }}\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of group.words; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
 
 /***/ }),
 
@@ -770,6 +810,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
 var core_1 = __webpack_require__(5);
 var core_2 = __webpack_require__(5);
+// Import the application components and services.
 var word_service_1 = __webpack_require__(59);
 var SynonymsComponent = /** @class */ (function () {
     // I initialize the synonyms component.
@@ -798,58 +839,65 @@ var SynonymsComponent = /** @class */ (function () {
             _this.results = {
                 count: response.words.length,
                 groups: [
-                    { partOfSpeech: "Adjective", synonyms: [] },
-                    { partOfSpeech: "Adverb", synonyms: [] },
-                    { partOfSpeech: "Noun", synonyms: [] },
-                    { partOfSpeech: "Verbs", synonyms: [] }
+                    { label: "Adjectives", words: [] },
+                    { label: "Adverbs", words: [] },
+                    { label: "Nouns", words: [] },
+                    { label: "Verbs", words: [] }
                 ]
             };
+            // Move each word into the appropriate part-of-speech group.
             for (var _i = 0, _a = response.words; _i < _a.length; _i++) {
                 var word = _a[_i];
                 switch (word.typeOfSpeech) {
                     case "adjective":
-                        _this.results.groups[0].synonyms.push({
-                            word: word.value,
+                        _this.results.groups[0].words.push({
+                            value: word.value,
                             isStrongMatch: word.isStrongMatch
                         });
                         break;
                     case "adverb":
-                        _this.results.groups[1].synonyms.push({
-                            word: word.value,
+                        _this.results.groups[1].words.push({
+                            value: word.value,
                             isStrongMatch: word.isStrongMatch
                         });
                         break;
                     case "noun":
-                        _this.results.groups[2].synonyms.push({
-                            word: word.value,
+                        _this.results.groups[2].words.push({
+                            value: word.value,
                             isStrongMatch: word.isStrongMatch
                         });
                         break;
                     case "verb":
-                        _this.results.groups[3].synonyms.push({
-                            word: word.value,
+                        _this.results.groups[3].words.push({
+                            value: word.value,
                             isStrongMatch: word.isStrongMatch
                         });
                         break;
                 }
             }
+            // Now that we've populated the groups, let's sort them based on the
+            // relative "strength" of each group. The groups with the greater
+            // number of "strong" matches will move to the top.
             _this.results.groups.sort(function (a, b) {
-                var aStrongMatches = a.synonyms.filter(function (item) {
-                    return (item.isStrongMatch);
+                var aStrongMatches = a.words.filter(function (word) {
+                    return (word.isStrongMatch);
                 });
-                var bStrongMatches = b.synonyms.filter(function (item) {
-                    return (item.isStrongMatch);
+                var bStrongMatches = b.words.filter(function (word) {
+                    return (word.isStrongMatch);
                 });
                 if (aStrongMatches.length > bStrongMatches.length) {
                     return (-1);
                 }
                 else if (bStrongMatches.length > aStrongMatches.length) {
                     return (1);
+                    // If two groups have the same number of strong matches, just
+                    // fallback to the number of matches overall. Groups with
+                    // more matches will rise to the top.
                 }
-                else if (a.synonyms.length > b.synonyms.length) {
+                else if (a.words.length > b.words.length) {
                     return (-1);
                 }
-                else if (b.synonyms.length > a.synonyms.length) {
+                else if (b.words.length > a.words.length) {
                     return (1);
                 }
                 else {
@@ -889,7 +937,7 @@ module.exports = ":host {\n  display: block ;\n}\n.header {\n  margin-bottom: 15
 /***/ 235:
 /***/ (function(module, exports) {
 
-module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no synonyms found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( results && results.count )\" class=\"results\">\n\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.partOfSpeech }}:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let synonym of group.synonyms; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"synonym.isStrongMatch\">\n\t\t\t\t\t{{ synonym.word }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
+module.exports = "\n<header class=\"header\">\n\t<div class=\"header__title title\">\n\t\t<span class=\"title__bigsexy\">BigSexy</span>\n\t\t<span class=\"title__synonyms\">Synonyms</span>\n\t</div>\n\n\t<div class=\"header__description\">\n\t\tFind words that mean roughly the same thing.\n\t</div>\n</header>\n\n<div class=\"body\">\n\n\t<form (submit)=\"handleSubmit()\" class=\"search\">\n\t\t<input type=\"text\" name=\"query\" [(ngModel)]=\"query\" class=\"search__input\" />\n\t\t<button type=\"submit\" class=\"search__submit\">\n\t\t\tSearch\n\t\t</button>\n\t</form>\n\n\t<!-- BEGIN: Loading Indicator. -->\n\t<div *ngIf=\"isLoading\" class=\"loading\">\n\t\tLoading...\n\t</div>\n\t<!-- END: Loading Indicator. -->\n\n\t<!-- BEGIN: No Results. -->\n\t<div *ngIf=\"( ! isLoading && results && ! results.count )\" class=\"no-results\">\n\t\tSorry, no synonyms found.\n\t</div>\n\t<!-- END: No Results. -->\n\n\t<!-- BEGIN: Results. -->\n\t<div *ngIf=\"( ! isLoading && results && results.count )\" class=\"results\">\n\n\t\t<div *ngFor=\"let group of results.groups\" class=\"results__group\">\n\t\t\t<div class=\"results__label\">\n\t\t\t\t{{ group.label }}:\n\t\t\t</div>\n\n\t\t\t<div class=\"results__value\">\n\t\t\t\t<span\n\t\t\t\t\t*ngFor=\"let word of group.words; last as isLast;\"\n\t\t\t\t\tclass=\"results__token\"\n\t\t\t\t\t[class.results__token--emphasize]=\"word.isStrongMatch\">\n\t\t\t\t\t{{ word.value }}<ng-template [ngIf]=\"! isLast\">,</ng-template>\n\t\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n\t<!-- END: Results. -->\n\n</div>\n"
 
 /***/ }),
 
@@ -1271,22 +1319,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Import the core angular services.
 var core_1 = __webpack_require__(5);
 var core_2 = __webpack_require__(5);
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
 var StorageService = /** @class */ (function () {
     // I initialize the storage service.
     function StorageService(errorHandler) {
+        var _this = this;
         this.errorHandler = errorHandler;
+        this.pendingWrites = Object.create(null);
         this.timer = null;
+        this.timerDuration = (10 * 1000); // 10-seconds.
+        // Since we are going to be deferring WRITES, we want to make sure that we
+        // perform one more flush right before the browser is about to unload. This will
+        // ensure that no pending writes slip through the cracks.
+        window.addEventListener("beforeunload", function () {
+            _this.flushPendingWrites();
+        });
     }
     // ---
     // PUBLIC METHODS.
     // ---
     // I get the given item from storage. If the storage infrastructure is not available,
     // "undefined" is returned.
+    // --
+    // CAUTION: The value will be deserialized from a JSON string.
     StorageService.prototype.getItem = function (key) {
         try {
-            var serializedValue = window.localStorage.getItem(this.getStorageKey(key));
+            var serializedValue = window.localStorage.getItem(this.normalizeKey(key));
             var value = JSON.parse(serializedValue);
             return (value);
         }
@@ -1299,28 +1356,41 @@ var StorageService = /** @class */ (function () {
     // --
     // CAUTION: The value will be serialized as a JSON string.
     StorageService.prototype.setItem = function (key, value) {
-        var _this = this;
-        window.clearTimeout(this.timer);
-        // Since we don't need to return any value, let's do the actual write inside of
-        // a timeout. Since localStorage is a synchronous API, this should help prevent
-        // it from blocking the user experience (from the user's perceptive - the actual
-        // write-operation will still be blocking).
-        this.timer = window.setTimeout(function () {
-            try {
-                window.localStorage.setItem(_this.getStorageKey(key), JSON.stringify(value));
-            }
-            catch (error) {
-                _this.errorHandler.handleError(error);
-            }
-        }, 5000 // 5-seconds.
-        );
+        // Since we don't need to return any value, let's do the actual write at some
+        // point in the future. Since localStorage is a synchronous API, this should
+        // help prevent it from blocking the user experience (at lest, from the user's
+        // perceptive - the actual write-operation will still be blocking).
+        try {
+            this.pendingWrites[this.normalizeKey(key)] = JSON.stringify(value);
+            this.scheduledPendingWrites();
+        }
+        catch (error) {
+            this.errorHandler.handleError(error);
+        }
     };
     // ---
     // PRIVATE METHODS.
     // ---
+    // I flush any pending write-operations to the localStorage API.
+    StorageService.prototype.flushPendingWrites = function () {
+        for (var _i = 0, _a = Object.keys(this.pendingWrites); _i < _a.length; _i++) {
+            var key = _a[_i];
+            window.localStorage.setItem(key, this.pendingWrites[key]);
+            delete (this.pendingWrites[key]);
+        }
+    };
     // I return the normalized key for localStorage.
-    StorageService.prototype.getStorageKey = function (key) {
+    StorageService.prototype.normalizeKey = function (key) {
         return ("big-sexy-poems:" + key.toLowerCase());
+    };
+    // I scheduled the flushing of the pending-writes at some point in the future.
+    // Calling this will implicitly push-out any existing scheduled-write.
+    StorageService.prototype.scheduledPendingWrites = function () {
+        var _this = this;
+        window.clearTimeout(this.timer);
+        this.timer = window.setTimeout(function () {
+            _this.flushPendingWrites();
+        }, this.timerDuration);
     };
     StorageService = __decorate([
         core_2.Injectable({

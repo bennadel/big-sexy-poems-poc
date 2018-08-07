@@ -26,25 +26,25 @@
 	<!-- END: Loading Indicator. -->
 
 	<!-- BEGIN: No Results. -->
-	<div *ngIf="( results && ! results.count )" class="no-results">
+	<div *ngIf="( ! isLoading && results && ! results.count )" class="no-results">
 		Sorry, no synonyms found.
 	</div>
 	<!-- END: No Results. -->
 
 	<!-- BEGIN: Results. -->
-	<div *ngIf="( results && results.count )" class="results">
+	<div *ngIf="( ! isLoading && results && results.count )" class="results">
 
 		<div *ngFor="let group of results.groups" class="results__group">
 			<div class="results__label">
-				{{ group.partOfSpeech }}:
+				{{ group.label }}:
 			</div>
 
 			<div class="results__value">
 				<span
-					*ngFor="let synonym of group.synonyms; last as isLast;"
+					*ngFor="let word of group.words; last as isLast;"
 					class="results__token"
-					[class.results__token--emphasize]="synonym.isStrongMatch">
-					{{ synonym.word }}<ng-template [ngIf]="! isLast">,</ng-template>
+					[class.results__token--emphasize]="word.isStrongMatch">
+					{{ word.value }}<ng-template [ngIf]="! isLast">,</ng-template>
 				</span>
 			</div>
 		</div>

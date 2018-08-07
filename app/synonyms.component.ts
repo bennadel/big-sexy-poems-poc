@@ -4,25 +4,23 @@ import { Component } from "@angular/core";
 import { ErrorHandler } from "@angular/core";
 
 // Import the application components and services.
-import { MeansLikeResults } from "./shared/services/word.service";
-import { Word } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 
-interface SynonymResults {
+interface Results {
 	count: number;
-	groups: SynonymGroup[];
+	groups: ResultGroup[];
 }
 
-interface SynonymGroup {
-	partOfSpeech: string;
-	synonyms: Synonym[];
+interface ResultGroup {
+	label: string;
+	words: ResultWord[];
 }
 
-interface Synonym {
-	word: string;
+interface ResultWord {
+	value: string;
 	isStrongMatch: boolean;
 }
 
@@ -35,7 +33,7 @@ export class SynonymsComponent {
 
 	public isLoading: boolean;
 	public query: string;
-	public results: SynonymResults | null;
+	public results: Results | null;
 
 	private errorHandler: ErrorHandler;
 	private wordService: WordService;
@@ -81,37 +79,38 @@ export class SynonymsComponent {
 					this.results = {
 						count: response.words.length,
 						groups: [
-							{ partOfSpeech: "Adjectives", synonyms: [] },
-							{ partOfSpeech: "Adverbs", synonyms: [] },
-							{ partOfSpeech: "Nouns", synonyms: [] },
-							{ partOfSpeech: "Verbs", synonyms: [] }
+							{ label: "Adjectives", words: [] },
+							{ label: "Adverbs", words: [] },
+							{ label: "Nouns", words: [] },
+							{ label: "Verbs", words: [] }
 						]
 					};
 
+					// Move each word into the appropriate part-of-speech group.
 					for ( var word of response.words ) {
 
 						switch ( word.typeOfSpeech ) {
 							case "adjective":
-								this.results.groups[ 0 ].synonyms.push({
-									word: word.value,
+								this.results.groups[ 0 ].words.push({
+									value: word.value,
 									isStrongMatch: word.isStrongMatch
 								});
 							break;
 							case "adverb":
-								this.results.groups[ 1 ].synonyms.push({
-									word: word.value,
+								this.results.groups[ 1 ].words.push({
+									value: word.value,
 									isStrongMatch: word.isStrongMatch
 								});
 							break;
 							case "noun":
-								this.results.groups[ 2 ].synonyms.push({
-									word: word.value,
+								this.results.groups[ 2 ].words.push({
+									value: word.value,
 									isStrongMatch: word.isStrongMatch
 								});
 							break;
 							case "verb":
-								this.results.groups[ 3 ].synonyms.push({
-									word: word.value,
+								this.results.groups[ 3 ].words.push({
+									value: word.value,
 									isStrongMatch: word.isStrongMatch
 								});
 							break;
@@ -119,18 +118,25 @@ export class SynonymsComponent {
 
 					}
 
+					// Now that we've populated the groups, let's sort them based on the
+					// relative "strength" of each group. The groups with the greater
+					// number of "strong" matches will move to the top.
 					this.results.groups.sort(
-						( a: SynonymGroup, b: SynonymGroup ) => {
+						( a: ResultGroup, b: ResultGroup ) => {
 
-							var aStrongMatches = a.synonyms.filter(
-								( item ) => {
-									return( item.isStrongMatch );
+							var aStrongMatches = a.words.filter(
+								( word ) => {
+
+									return( word.isStrongMatch );
+
 								}
 							);
 
-							var bStrongMatches = b.synonyms.filter(
-								( item ) => {
-									return( item.isStrongMatch );
+							var bStrongMatches = b.words.filter(
+								( word ) => {
+
+									return( word.isStrongMatch );
+
 								}
 							);
 
@@ -142,11 +148,14 @@ export class SynonymsComponent {
 
 								return( 1 );
 
-							} else if ( a.synonyms.length > b.synonyms.length ) {
+							// If two groups have the same number of strong matches, just
+							// fallback to the number of matches overall. Groups with
+							// more matches will rise to the top.
+							} else if ( a.words.length > b.words.length ) {
 
 								return( -1 );
 
-							} else if ( b.synonyms.length > a.synonyms.length ) {
+							} else if ( b.words.length > a.words.length ) {
 
 								return( 1 );
 
@@ -174,9 +183,5 @@ export class SynonymsComponent {
 		;
 
 	}
-
-	// ---
-	// PRIVATE METHODS.
-	// ---
 
 }

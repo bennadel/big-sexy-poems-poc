@@ -49,6 +49,7 @@ export class CanvasComponent {
 	// PUBLIC METHODS.
 	// ---
 
+	// I handle changes to the "persist poem" toggle.
 	public handlePersistenceChange() : void {
 
 		if ( this.shouldPersistPoem ) {
@@ -66,6 +67,7 @@ export class CanvasComponent {
 	}
 
 
+	// I handle changes to the poem text.
 	public handlePoemChanged() : void {
 
 		if ( this.shouldPersistPoem ) {
@@ -74,27 +76,30 @@ export class CanvasComponent {
 
 		}
 
-		clearTimeout( this.syllableTimer );
-
-		this.syllableTimer = setTimeout(
-			() => {
-
-				this.updateSyllableCounts();
-
-			},
-			500
-		);
+		// As the user formulates the poem, we want to be checking for new words and
+		// syllable counts; however, in order to reduce the number of "partial words"
+		// that we match against, let's push the syllable count update to slightly in
+		// the future. This way, the counts are only re-established when the user typing
+		// comes to a brief rest.
+		this.scheduleSyllableCountUpdate();
 
 	}
 
 
+	// I get called once after the inputs have been bound for the first time.
 	public ngOnInit() : void {
 
 		switch ( this.storageService.getItem( "save-poem" ) ) {
+			// If the "save poem" setting is undefined, it means that it has never been
+			// set before. In that case, we're going to default it to being ON. The
+			// chances are good that the user will want their data to be stored across
+			// refreshes and defaulting it to ON will result in fewer mistakes.
 			case undefined: 
 				this.shouldPersistPoem = true;
 				this.storageService.setItem( "save-poem", true );
 			break;
+			// If the "save poem" setting is TRUE, then let's try to pull any previously
+			// saved poem back into the application.
 			case true:
 				this.shouldPersistPoem = true;
 				this.poem = ( this.storageService.getItem( "poem" ) || "" );
@@ -104,6 +109,8 @@ export class CanvasComponent {
 			break;
 		}
 
+		// At this point, we may have pulled a saved poem back into the application. As
+		// such, we may need to update the syllable count.
 		this.updateSyllableCounts();
 
 	}
@@ -112,6 +119,7 @@ export class CanvasComponent {
 	// PRIVATE METHODS.
 	// ---
 
+	// I extract the lines from the given NORMALIZED text.
 	private extractLines( value: string ) : string[] {
 
 		return( value.trim().split( /\r\n?|\n/g ) );
@@ -119,25 +127,26 @@ export class CanvasComponent {
 	}
 
 
+	// I return a collection of unique words from the given NORMALIZED text.
 	private extractUniqueWords( value: string ) : string[] {
 
-		var words = this.extractWords( value )
-			.reduce(
-				( reduction, word ) => {
+		var uniqueWords = Object.create( null );
 
-					reduction[ word ] = true;
-					return( reduction );
+		// Write each word to the unique collection. This will cause word collisions to
+		// overwrite each other, leaving us with a collection whose keys represent the
+		// sum total of unique words in the given value.
+		for ( var word of this.extractWords( value ) ) {
 
-				},
-				Object.create( null ) // Initial value.
-			)
-		;
+			uniqueWords[ word ] = true;
 
-		return( Object.keys( words ) );
+		}
+
+		return( Object.keys( uniqueWords ) );
 
 	}
 
 
+	// I extract the word tokens from the given NORMALIZED text.
 	private extractWords( value: string ) : string[] {
 
 		return( value.trim().match( /\S+/g ) || [] );
@@ -145,15 +154,22 @@ export class CanvasComponent {
 	}
 
 
+	// I normalize the given poem text for use in the syllable count. This removes all of
+	// the content that has no bearing on the syllable count; and, creates a value that
+	// will work well with the WordService.
 	private normalizePoemText( poem: string ) : string {
 
 		var normalizedPoem = poem
 			.toLowerCase()
-			// Replace any string of word-delimiters with a space.
-			.replace( /[ _:\u2014\u2013-]+/g, " " )
+			// Strip out any quotes.
+			.replace( /['"]+/g, "" )
 			// Strip out any constructs that don't directly influence the way in which
 			// the poem can be read out-loud.
-			.replace( /[^a-z0-9\s]/gi, "" )
+			// --
+			// NOTE: Creating extra white-space won't be a problem because we will only
+			// care about the words that are left-over.
+			.replace( /[^a-z0-9\s]/gi, " " )
+			.trim()
 		;
 
 		return( normalizedPoem );
@@ -161,9 +177,33 @@ export class CanvasComponent {
 	}
 
 
+	// I schedule an update of the syllable count for some time in the future. This
+	// implicitly cancels any existing scheduled update.
+	private scheduleSyllableCountUpdate() : void {
+
+		clearTimeout( this.syllableTimer );
+
+		this.syllableTimer = setTimeout(
+			() => {
+
+				this.updateSyllableCounts();
+
+			},
+			500 // Half-second.
+		);
+
+	}
+
+
+	// I gather the syllable counts for each line in the current poem text.
 	private updateSyllableCounts() : void {
 
 		var poemSnapshot = this.poem;
+
+		// Since the user may enter any kind of text into the poem input, there's a good
+		// chance that it contains data that has no audible component (ex, quotes and
+		// other punctuation). As such, let's strip out anything that won't influence the
+		// number of syllables.
 		var text = this.normalizePoemText( poemSnapshot );
 		var words = this.extractUniqueWords( text );
 
@@ -182,45 +222,45 @@ export class CanvasComponent {
 					}
 
 					// At this point, we should be guaranteed that there is a syllable
-					// count for every word token in the normalized poem. As such, we
-					// should be able to break the poem into lines and then count the
-					// syllables in each line.
-					this.syllableCounts = this
-						.extractLines( text )
-						.map(
-							( line ) => {
+					// count for every word token in the normalized poem (though some of
+					// them may be ZERO if the WordService didn't understand what words
+					// they were). As such, we should be able to break the poem into
+					// lines and then count the syllables in each line. Let's map each
+					// line to a syllable count.
+					this.syllableCounts = this.extractLines( text ).map(
+						( line ) => {
 
-								var tokens = this.extractWords( line );
+							var tokens = this.extractWords( line );
 
-								if ( ! tokens ) {
+							// If there are no words in this line, just return zero.
+							if ( ! tokens ) {
 
-									return( 0 );
-
-								}
-
-								var count = tokens.reduce(
-									( reduction, token ) => {
-
-										// If the word-service didn't recognize the given
-										// word token (or failed to return a response),
-										// then it will return ZERO for the syllable
-										// count. In such a case, we'll default to using
-										// ONE syllable so that the token takes some
-										// degree of auditory space.
-										// --
-										// TODO: Possibly add some sort of fall-back for
-										// calculating syllable count on the client.
-										return( reduction + ( counts[ token ] || 1 ) );
-
-									},
-									0 // Initial value.
-								);
-
-								return( count );
+								return( 0 );
 
 							}
-						)
-					;
+
+							var count = tokens.reduce(
+								( reduction, token ) => {
+
+									// If the word-service didn't recognize the given
+									// word token (or failed to return a response),
+									// then it will return ZERO for the syllable
+									// count. In such a case, we'll default to using
+									// ONE syllable so that the token takes some
+									// degree of auditory space.
+									// --
+									// TODO: Possibly add some sort of fall-back for
+									// calculating syllable count on the client.
+									return( reduction + ( counts[ token ] || 1 ) );
+
+								},
+								0 // Initial value.
+							);
+
+							return( count );
+
+						}
+					);
 
 				}
 			)

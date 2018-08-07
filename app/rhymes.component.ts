@@ -10,18 +10,18 @@ import { WordService } from "./shared/services/word.service";
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 
-interface RhymeResults {
+interface Results {
 	count: number;
-	groups: RhymeGroup[];
+	groups: ResultGroup[];
 }
 
-interface RhymeGroup {
-	syllableCount: number;
-	rhymes: Rhyme[];
+interface ResultGroup {
+	label: string;
+	words: ResultWord[];
 }
 
-interface Rhyme {
-	word: string;
+interface ResultWord {
+	value: string;
 	isStrongMatch: boolean;
 }
 
@@ -34,7 +34,7 @@ export class RhymesComponent {
 
 	public isLoading: boolean;
 	public query: string;
-	public results: RhymeResults | null;
+	public results: Results | null;
 
 	private errorHandler: ErrorHandler;
 	private wordService: WordService;
@@ -82,31 +82,29 @@ export class RhymesComponent {
 					this.results = {
 						count: response.words.length,
 						groups: [
-							{ syllableCount: 1, rhymes: [] },
-							{ syllableCount: 2, rhymes: [] },
-							{ syllableCount: 3, rhymes: [] },
-							{ syllableCount: 4, rhymes: [] },
-							{ syllableCount: 5, rhymes: [] },
-							{ syllableCount: 6, rhymes: [] }
+							{ label: "1 Syllable", words: [] },
+							{ label: "2 Syllables", words: [] },
+							{ label: "3 Syllables", words: [] },
+							{ label: "4 Syllables", words: [] },
+							{ label: "5 Syllables", words: [] },
+							{ label: "6 Syllables", words: [] }
 						]
 					};
 
-					// The words are returned in score-order. However, we want to display
-					// them in alphabetical order. As such, let's sort them before we
-					// divide them into groups so that we know the groups are implicitly
-					// sorted as they are created.
+					// The words are returned in rank-order. However, for easier
+					// consumption, we want to display them in alphabetical order. As
+					// such, let's sort them before we divide them into groups so that
+					// we know the groups are implicitly sorted as they are created.
 					response.words.sort(
 						( a: Word, b: Word ) => {
 
-							var wordA = a.value.toLowerCase();
-							var wordB = b.value.toLowerCase();
-
-							return( ( wordA < wordB ) ? -1 : 1 );
+							return( ( a.value < b.value ) ? -1 : 1 );
 
 						}
 					);
 
-					// Move each word into its appropriate results group.
+					// Now that the word response is sorted, let's move each word into
+					// its appropriate results group.
 					for ( var word of response.words ) {
 
 						// Our results data structure only accounts for a set number of
@@ -118,18 +116,18 @@ export class RhymesComponent {
 
 						}
 
-						this.results.groups[ word.syllableCount - 1 ].rhymes.push({
-							word: word.value,
+						this.results.groups[ word.syllableCount - 1 ].words.push({
+							value: word.value,
 							isStrongMatch: word.isStrongMatch
 						});
 
 					}
 
-					// Remove any results group that had no words added to it.
+					// And finally, remove any results group that ended up with no words.
 					this.results.groups = this.results.groups.filter(
 						( group ) => {
 
-							return( group.rhymes.length );
+							return( !! group.words.length );
 
 						}
 					);
@@ -140,6 +138,8 @@ export class RhymesComponent {
 				( error ) => {
 
 					this.isLoading = false;
+					this.results = null;
+
 					this.errorHandler.handleError( error );
 
 				}
