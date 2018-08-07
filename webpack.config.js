@@ -106,11 +106,11 @@ module.exports = {
 			hash: true
 		}),
 		// I compact the JavaScript content.
-		// new webpack.optimize.UglifyJsPlugin({ 
-		// 	mangle: {
-		// 		keep_fnames: true,
-		// 		keep_classnames: true
-		// 	}
-		// })
+		new webpack.optimize.UglifyJsPlugin({ 
+			mangle: {
+				keep_fnames: true,
+				keep_classnames: true
+			}
+		})
 	]
 };

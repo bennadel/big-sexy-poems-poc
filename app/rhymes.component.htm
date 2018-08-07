@@ -13,7 +13,7 @@
 <div class="body">
 
 	<form (submit)="handleSubmit()" class="search">
-		<input type="text" name="query" [(ngModel)]="query" class="search__input" />
+		<input type="text" name="query" [(ngModel)]="query" autocomplete="off" class="search__input" />
 		<button type="submit" class="search__submit">
 			Search
 		</button>
