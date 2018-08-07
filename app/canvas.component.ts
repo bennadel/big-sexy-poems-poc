@@ -7,6 +7,8 @@ import { ErrorHandler } from "@angular/core";
 import { StorageService } from "./shared/services/storage.service";
 import { SyllableResults } from "./shared/services/word.service";
 import { WordService } from "./shared/services/word.service";
+import { ThemeSwitcherService } from "./shared/services/theme-switcher.service";
+import { Subscription } from "../node_modules/rxjs";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -17,32 +19,34 @@ import { WordService } from "./shared/services/word.service";
 	templateUrl: "./canvas.component.htm"
 })
 export class CanvasComponent {
-
 	public poem: string;
 	public shouldPersistPoem: boolean;
 	public syllableCounts: number[];
+	public isDarkTheme: boolean;
+	public themeSubscription: Subscription
 
 	private errorHandler: ErrorHandler;
 	private storageService: StorageService;
 	private syllableTimer: number;
 	private wordService: WordService;
 
+	
 	// I initialize the canvas-component.
 	constructor(
 		errorHandler: ErrorHandler,
 		storageService: StorageService,
-		wordService: WordService
+		wordService: WordService,
+		private themeService: ThemeSwitcherService
 		) {
 
 		this.errorHandler = errorHandler;
 		this.storageService = storageService;
 		this.wordService = wordService;
-
 		this.poem = "";
 		this.shouldPersistPoem = false;
 		this.syllableCounts = [];
 		this.syllableTimer = 0;
-
+		
 	}
 
 	// ---
@@ -66,7 +70,6 @@ export class CanvasComponent {
 
 	}
 
-
 	// I handle changes to the poem text.
 	public handlePoemChanged() : void {
 
@@ -85,9 +88,12 @@ export class CanvasComponent {
 
 	}
 
-
 	// I get called once after the inputs have been bound for the first time.
 	public ngOnInit() : void {
+
+		this.themeSubscription = this.themeService.darkTheme$.subscribe(isDarkTheme => 
+			this.isDarkTheme = isDarkTheme
+		);
 
 		switch ( this.storageService.getItem( "save-poem" ) ) {
 			// If the "save poem" setting is undefined, it means that it has never been
@@ -112,9 +118,11 @@ export class CanvasComponent {
 		// At this point, we may have pulled a saved poem back into the application. As
 		// such, we may need to update the syllable count.
 		this.updateSyllableCounts();
-
 	}
 
+	public ngOnDestroy() {
+		this.themeSubscription.unsubscribe();
+	}
 	// ---
 	// PRIVATE METHODS.
 	// ---

@@ -12,6 +12,8 @@ import { HeaderComponent } from "./header.component";
 import { RhymesComponent } from "./rhymes.component";
 import { SharedModule } from "./shared/shared.module";
 import { SynonymsComponent } from "./synonyms.component";
+import { ThemeSwitcherComponent } from "./theme-switcher.component";
+import { ThemeSwitcherService } from "./shared/services/theme-switcher.service";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -31,8 +33,10 @@ import { SynonymsComponent } from "./synonyms.component";
 		FooterComponent,
 		HeaderComponent,
 		RhymesComponent,
-		SynonymsComponent
-	]
+		SynonymsComponent,
+		ThemeSwitcherComponent
+	],
+	providers: [ ThemeSwitcherService ]
 })
 export class AppModule {
 	// ...
