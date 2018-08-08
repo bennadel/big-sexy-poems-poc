@@ -134,7 +134,7 @@ export class WordService {
 
 		var rawResults = await this.datamuseClient.getWords({
 			rel_rhy: word,
-			md: "s", // s: syllable count.
+			md: "ps", // p: part of speech, s: syllable count.
 			max: 500
 		});
 
@@ -162,10 +162,15 @@ export class WordService {
 
 				}
 
+				// When getting rhymes, the "part of speech" is not a critical component.
+				// As such, if there are no tags, then we can just default to an empty
+				// collection.
+				var typeOfSpeech = this.getTypeOfSpeech( item.tags );
+
 				return({
 					value: item.word,
 					syllableCount: ( item.numSyllables || 0 ),
-					typeOfSpeech: <TypeOfSpeech>"unknown",
+					typeOfSpeech: typeOfSpeech,
 					isStrongMatch: isStrongMatch
 				});
 
@@ -280,6 +285,7 @@ export class WordService {
 	// PRIVATE METHODS.
 	// ---
 
+	// I determine if the given collection contains the given reference.
 	private arrayContains( collection: any[], value: any ) : boolean {
 
 		var foundItem = collection.find(
@@ -329,6 +335,7 @@ export class WordService {
 	}
 
 
+	// I return a Datamuse response that excludes antonyms.
 	private filterOutAntonyms( results: DatamuseMatch[] ) : DatamuseMatch[] {
 
 		var filteredResults = results.filter(
@@ -344,6 +351,7 @@ export class WordService {
 	}
 
 
+	// I return a Datamuse response that excludes proper nouns.
 	private filterOutProperNouns( results: DatamuseMatch[] ) : DatamuseMatch[] {
 
 		var filteredResults = results.filter(
@@ -379,6 +387,7 @@ export class WordService {
 	}
 
 
+	// I return a Datamuse response that excludes items without a tags property.
 	private filterOutTagless( results: DatamuseMatch[] ) : DatamuseMatch[] {
 
 		var filteredResults = results.filter(
@@ -394,7 +403,15 @@ export class WordService {
 	}
 
 
-	private getTypeOfSpeech( tags: string[] ) : TypeOfSpeech {
+	// I return the part of speech indicated in the given tags collection. Or, unknown
+	// if the tags do not contain any known indicator.
+	private getTypeOfSpeech( tags?: string[] ) : TypeOfSpeech {
+
+		if ( ! tags ) {
+
+			return( "unknown" );
+
+		}
 
 		var tag = tags.find(
 			( tag ) => {
@@ -431,6 +448,7 @@ export class WordService {
 	}
 
 
+	// I determine if the given tags indicate a synonym match.
 	private isSynonym( tags: string[] ) : boolean {
 
 		var value = tags.find(

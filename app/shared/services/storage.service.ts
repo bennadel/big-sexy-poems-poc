@@ -55,10 +55,24 @@ export class StorageService {
 
 		try {
 
-			var serializedValue = window.localStorage.getItem( this.normalizeKey( key ) );
+			var normalizedKey = this.normalizeKey( key );
+
+			// Since writes are being placed in an in-memory cache temporarily (so as not
+			// to block the user experience), there's a chance that the desired value is
+			// still in memory. If so, we can read it from the cache without going to the
+			// LocalStorage API.
+			if ( normalizedKey in this.pendingWrites ) {
+
+				var serializedValue = this.pendingWrites[ normalizedKey ];
+
+			} else {
+
+				var serializedValue = window.localStorage.getItem( normalizedKey );
+
+			}
+
 			var value = <T>JSON.parse( serializedValue );
 			return( value );
-
 
 		} catch ( error ) {
 
