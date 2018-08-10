@@ -13,7 +13,6 @@ import { RhymesComponent } from "./rhymes.component";
 import { SharedModule } from "./shared/shared.module";
 import { SynonymsComponent } from "./synonyms.component";
 import { ThemeSwitcherComponent } from "./theme-switcher.component";
-import { ThemeSwitcherService } from "./shared/services/theme-switcher.service";
 
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
@@ -35,8 +34,7 @@ import { ThemeSwitcherService } from "./shared/services/theme-switcher.service";
 		RhymesComponent,
 		SynonymsComponent,
 		ThemeSwitcherComponent
-	],
-	providers: [ ThemeSwitcherService ]
+	]
 })
 export class AppModule {
 	// ...

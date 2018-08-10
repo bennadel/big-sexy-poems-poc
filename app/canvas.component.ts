@@ -28,6 +28,7 @@ export class CanvasComponent {
 	private errorHandler: ErrorHandler;
 	private storageService: StorageService;
 	private syllableTimer: number;
+	private themeService: ThemeSwitcherService;
 	private wordService: WordService;
 
 	
@@ -35,13 +36,15 @@ export class CanvasComponent {
 	constructor(
 		errorHandler: ErrorHandler,
 		storageService: StorageService,
-		wordService: WordService,
-		private themeService: ThemeSwitcherService
+		themeService: ThemeSwitcherService,
+		wordService: WordService
 		) {
 
 		this.errorHandler = errorHandler;
 		this.storageService = storageService;
+		this.themeService = themeService;
 		this.wordService = wordService;
+
 		this.poem = "";
 		this.shouldPersistPoem = false;
 		this.syllableCounts = [];

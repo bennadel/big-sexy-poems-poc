@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of } from 'rxjs';
 
-@Injectable()
+@Injectable({
+	providedIn: "root"
+})
 export class ThemeSwitcherService {
 
   constructor() { }
