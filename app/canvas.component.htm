@@ -4,7 +4,8 @@
 		[(ngModel)]="poem"
 		(ngModelChange)="handlePoemChanged()"
 		class="canvas__input"
-	></textarea>
+		[class.canvas__input--dark]="isDarkTheme"
+	></textarea>	
 	<ul class="canvas__syllables">
 		<li
 			*ngFor="let count of syllableCounts"
