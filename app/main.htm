@@ -112,13 +112,12 @@
 				setTimeout(
 					function removeAfterFade() {
 
-						preloading.forEach(
-							function removePreloadItem( item ) {
+						for ( var i = 0 ; i < preloading.length ; i++ ) {
 
-								item.parentNode.removeChild( item );
+							var item = preloading[ i ];
+							item.parentNode.removeChild( item );
 
-							}
-						);
+						}
 
 					},
 					500

@@ -112,13 +112,12 @@
 				setTimeout(
 					function removeAfterFade() {
 
-						preloading.forEach(
-							function removePreloadItem( item ) {
+						for ( var i = 0 ; i < preloading.length ; i++ ) {
 
-								item.parentNode.removeChild( item );
+							var item = preloading[ i ];
+							item.parentNode.removeChild( item );
 
-							}
-						);
+						}
 
 					},
 					500
@@ -145,5 +144,5 @@
 		}
 	</style>
 
-<script type="text/javascript" src="build/manifest.js?ccbbdce3266f39bb7531"></script><script type="text/javascript" src="build/polyfill.js?ccbbdce3266f39bb7531"></script><script type="text/javascript" src="build/vendor.js?ccbbdce3266f39bb7531"></script><script type="text/javascript" src="build/main.js?ccbbdce3266f39bb7531"></script></body>
+<script type="text/javascript" src="build/manifest.js?0628da4f4b858b63f37a"></script><script type="text/javascript" src="build/polyfill.js?0628da4f4b858b63f37a"></script><script type="text/javascript" src="build/vendor.js?0628da4f4b858b63f37a"></script><script type="text/javascript" src="build/main.js?0628da4f4b858b63f37a"></script></body>
 </html>
