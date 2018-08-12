@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="utf-8" />
 
@@ -8,6 +8,129 @@
 	</title>
 
 	<link rel="icon" type="image/png" href="./favico.png">
+</head>
+<body>
+
+	<style type="text/css" class="app-preload">
+		div.loading-screen {
+			background-color: #ffffff ;
+			bottom: 0px ;
+			display: flex ;
+			left: 0px ;
+			position: fixed ;
+			right: 0px ;
+			top: 0px ;
+			z-index: 2 ;
+		}
+
+		div.loading-screen--loaded {
+			opacity: 0.0 ;
+			transition: opacity 500ms ease ;
+		}
+
+		div.loading-screen__indicator {
+			margin: auto ;
+		}
+
+		div.indicator {
+			display: flex ;
+			flex-direction: column ;
+			font-family: arial, verdana, sans-serif ;
+		}
+
+		div.indicator__branding {
+			background-color: #262626 ;
+			border-radius: 5px 5px 5px 5px ;
+			color: #ffffff ;
+			display: flex ;
+			font-size: 40px ;
+			line-height: 45px ;
+			padding: 25px 35px 25px 35px ;
+		}
+
+		span.indicator__bigsexy {
+			font-weight: 800 ;
+		}
+
+		span.indicator__poems {
+			font-weight: 100 ;
+		}
+
+		div.indicator__description {
+			color: #999999 ;
+			font-size: 16px ;
+			font-weight: 100 ;
+			line-height: 21px ;
+			margin-top: 20px ;
+			text-align: center ;
+		}
+	</style>
+
+	<div class="app-preload loading-screen">
+		<div class="loading-screen__indicator indicator">
+
+			<div class="indicator__branding">
+				<span class="indicator__bigsexy">BigSexy</span>
+				<span class="indicator__poems">Poems</span>
+			</div>
+
+			<div class="indicator__description">
+				&mdash; loading poetry assets &mdash;
+			</div>
+
+		</div>
+	</div>
+
+	<script type="text/javascript" class="app-preload">
+		(function() {
+
+			var preloading = document.querySelectorAll( ".app-preload" );
+			var loadingScreen = document.querySelector( "div.app-preload.loading-screen" );
+
+			window.addEventListener( "message", handleMessage, false );
+
+			// ------------------------------------------------------------------- //
+			// ------------------------------------------------------------------- //
+
+			// I handle the "message" event on the window.
+			function handleMessage( event ) {
+
+				if ( event.data === "appready" ) {
+
+					window.removeEventListener( "message", handleMessage, false );
+					removeLoadingScreen();
+
+				}
+
+			}
+
+			// I remove the loading screen from the UI.
+			function removeLoadingScreen() {
+
+				loadingScreen.classList.add( "loading-screen--loaded" );
+
+				setTimeout(
+					function removeAfterFade() {
+
+						preloading.forEach(
+							function removePreloadItem( item ) {
+
+								item.parentNode.removeChild( item );
+
+							}
+						);
+
+					},
+					500
+				);
+
+			}
+			
+		})();
+	</script>
+
+	<my-app></my-app>
+
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:100,300,900">
 	<style type="text/css">
@@ -21,12 +144,6 @@
 			box-sizing: border-box ;
 		}
 	</style>
-</head>
-<body>
-
-	<my-app>
-		Loading....
-	</my-app>
 
 </body>
 </html>
