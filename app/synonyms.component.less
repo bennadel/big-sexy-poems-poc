@@ -1,4 +1,6 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
 	display: block ;
 }
@@ -21,6 +23,15 @@
 
 .title {
 	display: flex ;
+	.transition-properties( color ) ;
+
+	:host-context( .light-theme ) & {
+		color: #121212 ;
+	}
+
+	:host-context( .dark-theme ) & {
+		color: #ffffff ;
+	}
 
 	&__bigsexy {
 		font-weight: 300 ;
@@ -32,9 +43,20 @@
 }
 
 .body {
-	background-color: #f0f0f0 ;
+	border: 1px solid transparent ;
 	border-radius: 4px 4px 4px 4px ;
 	padding: 22px 22px 22px 22px ;
+	.transition-properties( background-color, border-color ) ;
+
+	:host-context( .light-theme ) & {
+		background-color: #f0f0f0 ;
+		border-color: #f0f0f0 ;
+	}
+
+	:host-context( .dark-theme ) & {
+		background-color: #141516 ;
+		border-color: #212224 ;
+	}
 }
 
 .search {
@@ -42,31 +64,69 @@
 	margin: 0px 0px 0px 0px ;
 
 	&__input {
-		border: 1px solid #cccccc ;
+		border: 1px solid transparent ;
 		border-radius: 3px ;
 		flex: 1 1 auto ;
 		font-size: 18px ;
 		padding: 8px 5px 7px 10px ;
+		.transition-properties( background-color, border-color, color ) ;
+
+		:host-context( .light-theme ) & {
+			background-color: #ffffff ;
+			border-color: #cccccc ;
+			color: #333333 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			background-color: #141516 ;
+			border-color: #212224 ;
+			color: #ffffff ;
+
+			&:focus,
+			&:active {
+				background-color: #262626 ;
+			}
+		}
 	}
 
 	&__submit {
-		background-color: #f0f0f0 ;
-		border: 1px solid #bababa ;
+		border: 1px solid transparent ;
 		border-radius: 3px ;
 		flex: 0 1 auto ;
 		font-size: 18px ;
 		margin-left: 10px ;
 		padding-left: 15px ;
 		padding-right: 15px ;
+		.transition-properties( background-color, border-color, color ) ;
+
+		:host-context( .light-theme ) & {
+			background-color: #f0f0f0 ;
+			border-color: #bababa ;
+			color: #333333 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			color: #ffffff ;
+			background-color: #212224 ;
+			border-color: #404040 ;
+		}
 	}
 }
 
 .loading,
 .no-results {
-	color: #aaaaaa ;
 	font-style: italic ;
 	margin: 50px 0px 40px 0px ;
 	text-align: center ;
+	.transition-properties( color ) ;
+
+	:host-context( .light-theme ) & {
+		color: #aaaaaa ;
+	}
+
+	:host-context( .dark-theme ) & {
+		color: #777777 ;
+	}
 }
 
 .results {
@@ -94,6 +154,15 @@
 
 		&--emphasize {
 			font-weight: 600 ;
+			.transition-properties( color ) ;
+
+			:host-context( .light-theme ) & {
+				color: #121212 ;
+			}
+
+			:host-context( .dark-theme ) & {
+				color: #eaeaea ;
+			}
 		}
 	}
 }

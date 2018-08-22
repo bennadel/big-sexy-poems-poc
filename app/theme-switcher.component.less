@@ -1,10 +1,11 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
 	display: block ;
 }
 
 .theme-switcher {
-
 	&__wrapper {
 		margin-top: 1em;
 		display: flex ;
@@ -12,7 +13,7 @@
 	}
 
 	&__button {
-		padding: 2px 4px ;
+		padding: 6px 12px ;
 		font-size: 10px ;
 		font-weight: 400 ;
 		line-height: 1.4 ;
@@ -21,21 +22,24 @@
 		-ms-touch-action: manipulation ;
 		touch-action: manipulation ;
 		cursor: pointer ;
+		border: 1px solid transparent ;
 		border-radius: 4px ;
+		.transition-properties( background-color, border-color, color ) ;
 
-		&--dark {
-			background-color: #222 ;
-			color: #FAFAFA ;
+		:host-context( .light-theme ) & {
+			background-color: #222222 ;
+			border-color: #222222 ;
+			color: #fafafa ;
 		}
 
-		&--light {
-			background-color: #FAFAFA  ;
-			color: #222 ;
+		:host-context( .dark-theme ) & {
+			background-color: #212224 ;
+			border-color: #404040 ;
+			color: #ffffff ;
 		}
 
 		&:focus {
 			outline: 0 ;
 		}
 	}
-
 }

@@ -1,4 +1,6 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
 	display: block ;
 }
@@ -11,18 +13,36 @@
 	line-height: 50px ;
 
 	&__name {
-		color: #121212 ;
 		display: flex ;
 		flex: 0 1 auto ;
 		padding-right: 30px ;
+		.transition-properties( color ) ;
+		
+		:host-context( .light-theme ) & {
+			color: #121212 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			color: #ffffff ;
+		}
 	}
 
 	&__message {
-		border-left: 2px solid #c8c8c8 ;
-		color: #666666 ;
+		border-left: 2px solid transparent ;
 		flex: 1 1 auto ;
 		font-weight: 100 ;
 		padding-left: 30px ;
+		.transition-properties( border-color, color ) ;
+
+		:host-context( .light-theme ) & {
+			border-color: #c8c8c8 ;
+			color: #666666 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			border-color: #262420 ;
+			color: #838b91 ;
+		}
 	}
 
 	&__bigsexy {
