@@ -1,12 +1,29 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
-	color: #121212 ;
 	display: block ;
 	font-family: "Open Sans", sans-serif ;
 	font-size: 1.2rem ;
 	font-weight: 300 ;
 	line-height: 1.5 ;
+	min-height: 100vh ;
+	.transition-properties( background-color, color ) ;
+}
+
+:host-context( .light-theme ) {
+	background-color: #ffffff ;
+	color: #121212 ;
+}
+
+:host-context( .dark-theme ) {
+	background-color: #141516 ;
+	color: #838b91 ;
+}
+
+.wrapper {
 	margin: 0px auto 0px auto ;
+	padding: 1px 0px 1px 0px ; // To make sure internal margins don't collapse.
 	width: 1100px ;
 }
 

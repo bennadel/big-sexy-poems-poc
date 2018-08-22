@@ -1,20 +1,41 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
 	display: block ;
 }
 
 .footer {
-	border-top: 2px solid #c8c8c8 ;
-	color: #999999 ;
+	border-top: 2px solid transparent ;
 	font-size: 14px ;
 	justify-content: space-between ;
 	padding-top: 10px ;
+	.transition-properties( border-color, color ) ;
+
+	:host-context( .light-theme ) & {
+		border-color: #c8c8c8 ;
+		color: #999999 ;
+	}
+
+	:host-context( .dark-theme ) & {
+		border-color: #666666 ;
+		color: #999999 ;
+	}
 
 	a {
 		color: inherit ;
+		.transition-properties( color ) ;
 
-		&:hover {
-			color: #000000 ;
+		:host-context( .light-theme ) & {
+			&:hover {
+				color: #000000 ;
+			}
+		}
+
+		:host-context( .dark-theme ) & {
+			&:hover {
+				color: #ffffff ;
+			}
 		}
 	}
 

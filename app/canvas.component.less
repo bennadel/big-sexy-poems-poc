@@ -1,14 +1,25 @@
 
+@import "./shared/less/utilities.less" ;
+
 :host {
 	display: block ;
 }
 
 .canvas {
-	border: 3px solid #cccccc ;
+	border: 3px solid transparent ;
 	border-radius: 4px 4px 4px 4px ;
 	display: flex ;
 	font-family: "Open Sans" ;
 	min-height: 300px ;
+	.transition-properties( border-color ) ;
+
+	:host-context( .light-theme ) & {
+		border-color: #cccccc ;
+	}
+
+	:host-context( .dark-theme ) & {
+		border-color: #2b2c2f ;
+	}
 
 	&__input,
 	&__syllables {
@@ -19,25 +30,28 @@
 	}
 
 	&__input {
-		background-color: #fafafa ;
 		flex: 1 1 100% ;
 		font-family: inherit ;
 		font-weight: 400 ;
+		.transition-properties( background-color, color ) ;
+
+		:host-context( .light-theme ) & {
+			background-color: #fafafa ;
+			color: #121212 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			background-color: #1b1c1c ;
+			color: #f0f0f0 ;
+		}
 
 		&:active,
 		&:focus {
 			outline: 0 ;
 		}
-	   
-	    &--dark {
-			background-color: #222 ;
-			color: #FAFAFA ;
-	    }
 	}
 
 	&__syllables {
-		background-color: #eaeaea ;
-		color: #999999 ;
 		flex: 0 1 70px ;
 		font-weight: 400 ;
 		list-style-type: none ;
@@ -47,6 +61,17 @@
 		padding-right: 18px ;
 		overflow: hidden ;
 		text-align: center ;
+		.transition-properties( background-color, color ) ;
+
+		:host-context( .light-theme ) & {
+			background-color: #eaeaea ;
+			color: #999999 ;
+		}
+
+		:host-context( .dark-theme ) & {
+			background-color: #212224 ;
+			color: #8e8e8e ;
+		}
 	}
 
 	&__syllable {
@@ -63,12 +88,24 @@
 	margin-top: 4px ;
 
 	&__label {
-		color: #888888 ;
 		cursor: pointer ;
 		font-size: 13px ;
+		.transition-properties( color ) ;
 
-		&:hover {
-			color: #000000 ;
+		:host-context( .light-theme ) & {
+			color: #888888 ;
+
+			&:hover {
+				color: #000000 ;
+			}
+		}
+
+		:host-context( .dark-theme ) & {
+			color: #999999 ;
+
+			&:hover {
+				color: #ffffff ;
+			}
 		}
 	}
 
